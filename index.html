@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCORE'N - Build Your Legend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        forest: '#050f0d', // Darker, almost black
+                        lime: '#b4f156',
+                        'lime-dim': '#8ebf43',
+                        surface: '#0a1a17',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Oswald', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)",
+                    },
+                    backgroundSize: {
+                        'grid': '40px 40px',
+                    },
+                    animation: {
+                        'marquee': 'marquee 20s linear infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #050f0d;
+            color: white;
+        }
+        .tech-grid {
+            background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), 
+                              linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050f0d; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333; 
+            border-radius: 0px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b4f156; 
+        }
+
+        /* Flame animation for Ammar's card */
+        @keyframes flame-pulse {
+            0%, 100% {
+                box-shadow: 
+                    0 0 20px rgba(255, 165, 0, 0.6),
+                    0 0 40px rgba(255, 69, 0, 0.4),
+                    0 0 60px rgba(255, 0, 0, 0.2),
+                    inset 0 0 20px rgba(255, 165, 0, 0.3);
+                border-color: rgba(255, 140, 0, 0.8);
+            }
+            50% {
+                box-shadow: 
+                    0 0 30px rgba(255, 165, 0, 0.8),
+                    0 0 60px rgba(255, 69, 0, 0.6),
+                    0 0 80px rgba(255, 0, 0, 0.4),
+                    inset 0 0 40px rgba(255, 165, 0, 0.5);
+                border-color: rgba(255, 69, 0, 1);
+            }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "recharts": "https://aistudiocdn.com/recharts@^3.4.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
