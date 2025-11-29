@@ -633,9 +633,10 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                     width: '340px',
                     height: '540px',
                     overflow: 'hidden',
-                    borderRadius: '32px', // Match main card
-                    backgroundColor: '#0a0a0a', // Match main card bg
-                    padding: '2px' // Match main card padding
+                    borderRadius: '32px',
+                    padding: '2px',
+                    background: 'linear-gradient(to bottom, #333333, #222222, rgba(180, 241, 86, 0.2))', // Match preview gradient border
+                    boxShadow: '0 0 50px rgba(0,0,0,0.5)' // Match preview shadow
                 }}
             >
                 {/* Inner Card Content - Replicated from main card but fixed layout */}
