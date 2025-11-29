@@ -141,7 +141,12 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
             clone.style.top = '0';
             clone.style.width = '340px'; // Force standard width
             clone.style.height = '540px'; // Force standard height
+            clone.style.minWidth = '340px';
+            clone.style.minHeight = '540px';
+            clone.style.maxWidth = '340px';
+            clone.style.maxHeight = '540px';
             clone.style.transform = 'none'; // Remove any scaling
+            clone.style.margin = '0';
             document.body.appendChild(clone);
 
             const canvas = await html2canvas(clone, {
@@ -420,11 +425,11 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                 <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
 
                                 {/* Top Section: Rating & Flag */}
-                                <div className="absolute top-6 left-6 z-20 pointer-events-none">
-                                    <div className="font-display text-6xl font-bold text-lime leading-[0.8] drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                                <div className="absolute top-6 left-6 z-20 pointer-events-none flex flex-col items-center w-12">
+                                    <div className="font-display text-6xl font-bold text-lime leading-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
                                         {overallRating}
                                     </div>
-                                    <div className="font-mono text-[9px] text-lime/70 uppercase tracking-widest mt-1 text-center">
+                                    <div className="font-mono text-[9px] text-lime/70 uppercase tracking-widest mt-2 text-center">
                                         LEVEL
                                     </div>
                                     <div className="font-display text-xl font-bold text-white text-center uppercase tracking-wide mt-1 drop-shadow-md">
@@ -552,7 +557,15 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                             <span className="text-[8px] font-mono text-gray-500 uppercase">FT</span>
                                         </div>
                                         <div className="flex justify-center">
-                                            <div className="w-4 h-5 bg-lime/20 rounded-sm"></div>
+                                            {/* Dynamic Heatmap on Card */}
+                                            <div className="grid grid-cols-3 gap-[1px] w-5 h-7 bg-black/50 p-[1px]">
+                                                {Array.from({ length: 15 }).map((_, i) => (
+                                                    <div
+                                                        key={i}
+                                                        className={`w-full h-full ${getZoneColor(zoneLevels[i] || 0)}`}
+                                                    />
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
