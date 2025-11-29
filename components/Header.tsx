@@ -18,7 +18,7 @@ export const Header: React.FC = () => {
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-center h-20">
           {/* Logo */}
           <div className="flex items-end gap-0.5">
             <span className="font-display font-bold text-3xl md:text-4xl text-white tracking-tighter leading-none">SCORE'</span>
