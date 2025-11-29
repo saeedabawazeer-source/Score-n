@@ -248,10 +248,10 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                 <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 w-full">
 
                     {/* CONTROL PANEL - Full width on mobile, left on desktop */}
-                    <div className="w-full lg:col-span-5 bg-white/[0.02] border border-white/5 p-6">
+                    <div className="w-full lg:col-span-5 bg-white/[0.02] border border-white/5 p-6 flex flex-col justify-between">
 
                         {/* Identity Block */}
-                        <div className="space-y-4 mb-6">
+                        <div className="space-y-4">
                             <div>
                                 <label className="block text-xs font-mono text-gray-500 uppercase tracking-widest mb-2">Name</label>
                                 <input
@@ -319,7 +319,7 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                         </div>
 
                         {/* Bio Sliders */}
-                        <div className="space-y-4 border-t border-white/5 pt-6 mb-6">
+                        <div className="space-y-4 border-t border-white/5 pt-6">
                             <div>
                                 <div className="flex justify-between mb-2">
                                     <span className="text-xs font-mono text-gray-500 uppercase">Height</span>
@@ -358,7 +358,7 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                         </div>
 
                         {/* Heatmap Selector */}
-                        <div className="border-t border-white/5 pt-6 mb-6">
+                        <div className="border-t border-white/5 pt-6">
                             <div className="flex justify-between items-center mb-4">
                                 <span className="text-xs font-mono text-gray-500 uppercase">Heatmap</span>
                                 <div className="flex gap-2 text-[9px] font-mono uppercase text-gray-500">
