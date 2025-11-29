@@ -169,9 +169,9 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
             }
 
             setIsSubmitted(true);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error submitting card:", error);
-            alert("There was an error saving your card. Please try again.");
+            alert(`Error: ${error.message || "Unknown error"}`);
         } finally {
             setIsSubmitting(false);
         }
