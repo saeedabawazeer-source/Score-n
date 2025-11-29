@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import html2canvas from 'html2canvas';
 import { PlayerBio } from '../types';
 import { Loader2, User, Camera, ChevronDown, Move, Globe, Flame, Search } from 'lucide-react';
 
@@ -57,6 +58,10 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const cardRef = useRef<HTMLDivElement>(null);
+
+    // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyX6Egu9E5TPWZcabatdh8R1724U1FLKaC9hREJ6cIi55N51qqYNSg1bsr-x6VUqqmA/exec";
 
     // Heatmap: 0=Off, 1=Green, 2=Yellow, 3=Red
     const [zoneLevels, setZoneLevels] = useState<Record<number, number>>({ 4: 3, 7: 2, 1: 1 });
@@ -123,10 +128,41 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
             alert("Please enter your contact info.");
             return;
         }
+        if (!cardRef.current) return;
+
         setIsSubmitting(true);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setIsSubmitted(true);
-        setIsSubmitting(false);
+
+        try {
+            // 1. Capture the card as an image
+            const canvas = await html2canvas(cardRef.current, {
+                backgroundColor: null, // Transparent background if possible, or matches CSS
+                scale: 2, // Higher quality
+                useCORS: true // For cross-origin images (flags, user uploads)
+            });
+            const imageBase64 = canvas.toDataURL('image/png');
+
+            // 2. Send to Google Script
+            // Note: fetch to Google Script often requires 'no-cors' mode if calling from client directly,
+            // but 'no-cors' means we can't read the response. 
+            // However, for a simple fire-and-forget or basic submission, standard POST works if the script handles CORS (which it can't fully on free tier easily).
+            // Actually, standard POST with 'Content-Type': 'text/plain' (to avoid preflight) usually works for Google Apps Script.
+
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: name || "Player",
+                    email: contactInfo,
+                    image: imageBase64
+                })
+            });
+
+            setIsSubmitted(true);
+        } catch (error) {
+            console.error("Error submitting card:", error);
+            alert("There was an error saving your card. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const getDisplayPosition = () => {
@@ -321,6 +357,7 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
 
                         {/* The Card - Natural mobile size */}
                         <div
+                            ref={cardRef}
                             className="relative w-full max-w-[340px] aspect-[340/540] lg:w-[340px] lg:h-[540px] transition-transform hover:scale-[1.01] duration-500 rounded-[32px] p-[2px] bg-gradient-to-b from-[#333] via-[#222] to-lime/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden"
                         >
                             {/* Inner Card Content */}
