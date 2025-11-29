@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Logo } from './Logo';
+import { CircleDashed } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,7 +22,7 @@ export const Header: React.FC = () => {
         <div className="flex items-center justify-center h-20">
           {/* Logo */}
           <div className="flex items-center gap-1">
-            <span className="font-display font-bold text-3xl md:text-4xl text-white tracking-[0.2em] flex items-center">
+            <span className="font-display font-bold text-3xl md:text-4xl text-white tracking-widest flex items-center">
               SC<span className="text-lime mx-0.5"><CircleDashed size={28} strokeWidth={3} /></span>RE'
             </span>
             <div className="relative -bottom-0.5 -ml-1">
