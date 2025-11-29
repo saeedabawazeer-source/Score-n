@@ -13,33 +13,29 @@ export const Logo: React.FC<LogoProps> = ({ className = "w-10 h-10" }) => {
             className={className}
         >
             {/* Hexagonal Net Pattern Definition */}
-            {/* Manually Drawn Full Hexagons for "Complete" Look */}
-            <g stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                {/* Row 1 */}
-                <path d="M25 20 L32 24 V32 L25 36 L18 32 V24 Z" />
-                <path d="M45 20 L52 24 V32 L45 36 L38 32 V24 Z" />
-                <path d="M65 20 L72 24 V32 L65 36 L58 32 V24 Z" />
-                <path d="M85 20 L92 24 V32 L85 36 L78 32 V24 Z" />
+            {/* 7-Hex Connected Mesh (Honeycomb Cluster) */}
+            <g stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                {/* Center Hex */}
+                <path d="M50 40 L58.66 45 V55 L50 60 L41.34 55 V45 Z" />
 
-                {/* Row 2 */}
-                <path d="M35 36 L42 40 V48 L35 52 L28 48 V40 Z" />
-                <path d="M55 36 L62 40 V48 L55 52 L48 48 V40 Z" />
-                <path d="M75 36 L82 40 V48 L75 52 L68 48 V40 Z" />
+                {/* Top Hex */}
+                <path d="M50 20 L58.66 25 V35 L50 40 L41.34 35 V25 Z" />
 
-                {/* Row 3 */}
-                <path d="M25 52 L32 56 V64 L25 68 L18 64 V56 Z" />
-                <path d="M45 52 L52 56 V64 L45 68 L38 64 V56 Z" />
-                <path d="M65 52 L72 56 V64 L65 68 L58 64 V56 Z" />
-                <path d="M85 52 L92 56 V64 L85 68 L78 64 V56 Z" />
+                {/* Top Right Hex */}
+                <path d="M67.32 30 L75.98 35 V45 L67.32 50 L58.66 45 V35 Z" />
 
-                {/* Row 4 */}
-                <path d="M35 68 L42 72 V80 L35 84 L28 80 V72 Z" />
-                <path d="M55 68 L62 72 V80 L55 84 L48 80 V72 Z" />
-                <path d="M75 68 L82 72 V80 L75 84 L68 80 V72 Z" />
+                {/* Bottom Right Hex */}
+                <path d="M67.32 50 L75.98 55 V65 L67.32 70 L58.66 65 V55 Z" />
+
+                {/* Bottom Hex */}
+                <path d="M50 60 L58.66 65 V75 L50 80 L41.34 75 V65 Z" />
+
+                {/* Bottom Left Hex */}
+                <path d="M32.68 50 L41.34 55 V65 L32.68 70 L24.02 65 V55 Z" />
+
+                {/* Top Left Hex */}
+                <path d="M32.68 30 L41.34 35 V45 L32.68 50 L24.02 45 V35 Z" />
             </g>
-
-            {/* The Net (Filled with Pattern) */}
-            {/* The previous pattern fill is removed as per instruction to use manual hex grid */}
 
             {/* Goal Post Frame - Left Pole Extended Up, No Bottom Bar */}
             <path
