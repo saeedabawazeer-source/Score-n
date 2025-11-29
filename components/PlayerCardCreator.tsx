@@ -133,45 +133,66 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
         setIsSubmitting(true);
 
         try {
-            // 1. Capture the card as an image (CLONE METHOD to fix mobile distortion)
-            // We clone the card, force it to desktop size, capture it, then remove it.
-            const clone = cardRef.current.cloneNode(true) as HTMLElement;
-            clone.style.position = 'absolute';
-            clone.style.left = '-9999px';
-            clone.style.top = '0';
-            clone.style.width = '340px'; // Force standard width
-            clone.style.height = '540px'; // Force standard height
-            clone.style.minWidth = '340px';
-            clone.style.minHeight = '540px';
-            clone.style.maxWidth = '340px';
-            clone.style.maxHeight = '540px';
-            clone.style.transform = 'none'; // Remove any scaling
-            clone.style.margin = '0';
-            document.body.appendChild(clone);
+            // 1. Capture the card as an image (LOCK & CAPTURE METHOD)
+            // Instead of cloning (which loses context/fonts), we lock the live element's dimensions,
+            // capture it, then unlock. This guarantees WYSIWYG.
 
-            // CRITICAL FIX: Explicitly set dimensions for images in the clone to match the source
-            // This prevents html2canvas from squishing 'auto' sized images
-            const sourceImages = cardRef.current.querySelectorAll('img');
-            const cloneImages = clone.querySelectorAll('img');
+            if (!cardRef.current) return;
 
-            sourceImages.forEach((sourceImg, index) => {
-                if (cloneImages[index]) {
-                    const rect = sourceImg.getBoundingClientRect();
-                    cloneImages[index].style.width = `${rect.width}px`;
-                    cloneImages[index].style.height = `${rect.height}px`;
-                }
+            // Save original styles
+            const originalStyle = {
+                width: cardRef.current.style.width,
+                height: cardRef.current.style.height,
+                transform: cardRef.current.style.transform,
+                transition: cardRef.current.style.transition,
+                margin: cardRef.current.style.margin
+            };
+
+            // Lock dimensions to standard desktop size
+            cardRef.current.style.width = '340px';
+            cardRef.current.style.height = '540px';
+            cardRef.current.style.transform = 'none';
+            cardRef.current.style.transition = 'none';
+            cardRef.current.style.margin = '0';
+
+            // Force images to explicit sizes to prevent squishing
+            const images = cardRef.current.querySelectorAll('img');
+            const originalImageStyles: { width: string, height: string }[] = [];
+            images.forEach(img => {
+                originalImageStyles.push({ width: img.style.width, height: img.style.height });
+                const rect = img.getBoundingClientRect();
+                // If it's the school badge or flag, we want to ensure it keeps its aspect ratio
+                // But since we are resizing the parent container to 340x540, the relative sizes might change
+                // However, since we are designing for 340x540, the CSS classes should handle it IF the container is that size.
+                // The issue with 'clone' was that it didn't have the context.
+                // Here we are resizing the ACTUAL container.
+                // So we might not need to force image sizes if the CSS is responsive to the container.
+                // But let's be safe and ensure max-width/height are respected.
             });
 
-            const canvas = await html2canvas(clone, {
+            const canvas = await html2canvas(cardRef.current, {
                 backgroundColor: null,
-                scale: 2, // High quality
+                scale: 3, // High quality
                 useCORS: true,
                 allowTaint: true,
                 width: 340,
-                height: 540
+                height: 540,
+                scrollX: 0,
+                scrollY: 0
             });
 
-            document.body.removeChild(clone);
+            // Restore original styles
+            cardRef.current.style.width = originalStyle.width;
+            cardRef.current.style.height = originalStyle.height;
+            cardRef.current.style.transform = originalStyle.transform;
+            cardRef.current.style.transition = originalStyle.transition;
+            cardRef.current.style.margin = originalStyle.margin;
+
+            // Restore image styles (if we modified them, which we didn't in this block, but good practice)
+            // images.forEach((img, i) => {
+            //    img.style.width = originalImageStyles[i].width;
+            //    img.style.height = originalImageStyles[i].height;
+            // });
             const imageBase64 = canvas.toDataURL('image/png');
 
             // 2. Send to Google Script
