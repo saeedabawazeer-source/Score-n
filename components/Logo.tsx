@@ -13,29 +13,21 @@ export const Logo: React.FC<LogoProps> = ({ className = "w-10 h-10" }) => {
             className={className}
         >
             {/* Hexagonal Net Pattern Definition */}
-            {/* 7-Hex Connected Mesh (Honeycomb Cluster) */}
-            <g stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                {/* Center Hex */}
-                <path d="M50 40 L58.66 45 V55 L50 60 L41.34 55 V45 Z" />
+            <defs>
+                <pattern id="hexNet" x="0" y="0" width="20" height="34.64" patternUnits="userSpaceOnUse">
+                    <path d="M10 17.32 V0 M0 5.77 L10 11.55 L20 5.77" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M10 34.64 V17.32 M0 23.09 L10 28.87 L20 23.09" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                </pattern>
+            </defs>
 
-                {/* Top Hex */}
-                <path d="M50 20 L58.66 25 V35 L50 40 L41.34 35 V25 Z" />
-
-                {/* Top Right Hex */}
-                <path d="M67.32 30 L75.98 35 V45 L67.32 50 L58.66 45 V35 Z" />
-
-                {/* Bottom Right Hex */}
-                <path d="M67.32 50 L75.98 55 V65 L67.32 70 L58.66 65 V55 Z" />
-
-                {/* Bottom Hex */}
-                <path d="M50 60 L58.66 65 V75 L50 80 L41.34 75 V65 Z" />
-
-                {/* Bottom Left Hex */}
-                <path d="M32.68 50 L41.34 55 V65 L32.68 70 L24.02 65 V55 Z" />
-
-                {/* Top Left Hex */}
-                <path d="M32.68 30 L41.34 35 V45 L32.68 50 L24.02 45 V35 Z" />
-            </g>
+            {/* Large Hexagon Shape Filled with Net Pattern */}
+            <path
+                d="M50 15 L80.31 32.5 V67.5 L50 85 L19.69 67.5 V32.5 Z"
+                fill="url(#hexNet)"
+                stroke="white"
+                strokeWidth="2.5"
+                strokeLinejoin="round"
+            />
 
             {/* Goal Post Frame - Left Pole Extended Up, No Bottom Bar */}
             <path
