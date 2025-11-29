@@ -149,6 +149,19 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
             clone.style.margin = '0';
             document.body.appendChild(clone);
 
+            // CRITICAL FIX: Explicitly set dimensions for images in the clone to match the source
+            // This prevents html2canvas from squishing 'auto' sized images
+            const sourceImages = cardRef.current.querySelectorAll('img');
+            const cloneImages = clone.querySelectorAll('img');
+
+            sourceImages.forEach((sourceImg, index) => {
+                if (cloneImages[index]) {
+                    const rect = sourceImg.getBoundingClientRect();
+                    cloneImages[index].style.width = `${rect.width}px`;
+                    cloneImages[index].style.height = `${rect.height}px`;
+                }
+            });
+
             const canvas = await html2canvas(clone, {
                 backgroundColor: null,
                 scale: 2, // High quality
