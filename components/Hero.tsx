@@ -23,7 +23,7 @@ const scatteredCards = [
     gms: 89,
     gls: 31,
     ast: 45,
-    heatmap: [0, 0, 0, 0, 2, 0, 0, 3, 0, 0, 1, 0, 0, 0, 0],
+    heatmap: [0, 0, 0, 0, 2, 0, 0, 3, 0, 0, 2, 0, 0, 0, 0],
     flagIso2: 'ae',
     imageUrl: '/player-cards/ammar.png',
     // Mobile: Top row, center | Desktop: Original
@@ -47,7 +47,7 @@ const scatteredCards = [
     gms: 47,
     gls: 23,
     ast: 12,
-    heatmap: [0, 0, 3, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],
+    heatmap: [0, 3, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
     flagIso2: 'sa',
     imageUrl: '/player-cards/hassan.png',
     // Mobile: Top row, left | Desktop: Original
@@ -70,7 +70,7 @@ const scatteredCards = [
     gms: 72,
     gls: 4,
     ast: 2,
-    heatmap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0],
+    heatmap: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 3, 0],
     flagIso2: 'mx',
     imageUrl: '/player-cards/julian.png',
     // Mobile: Top row, right | Desktop: Original
@@ -93,7 +93,7 @@ const scatteredCards = [
     gms: 56,
     gls: 18,
     ast: 22,
-    heatmap: [3, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    heatmap: [3, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
     flagIso2: 'es',
     imageUrl: '/player-cards/rodriguez.png',
     // Mobile: Bottom row, left | Desktop: Original
