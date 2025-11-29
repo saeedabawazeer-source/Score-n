@@ -133,66 +133,20 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
         setIsSubmitting(true);
 
         try {
-            // 1. Capture the card as an image (LOCK & CAPTURE METHOD)
-            // Instead of cloning (which loses context/fonts), we lock the live element's dimensions,
-            // capture it, then unlock. This guarantees WYSIWYG.
+            // 1. Capture the card as an image (PURE WYSIWYG METHOD)
+            // We capture the element exactly as it is on screen. No resizing, no cloning.
+            // This ensures that what the user sees is EXACTLY what is captured.
 
             if (!cardRef.current) return;
-
-            // Save original styles
-            const originalStyle = {
-                width: cardRef.current.style.width,
-                height: cardRef.current.style.height,
-                transform: cardRef.current.style.transform,
-                transition: cardRef.current.style.transition,
-                margin: cardRef.current.style.margin
-            };
-
-            // Lock dimensions to standard desktop size
-            cardRef.current.style.width = '340px';
-            cardRef.current.style.height = '540px';
-            cardRef.current.style.transform = 'none';
-            cardRef.current.style.transition = 'none';
-            cardRef.current.style.margin = '0';
-
-            // Force images to explicit sizes to prevent squishing
-            const images = cardRef.current.querySelectorAll('img');
-            const originalImageStyles: { width: string, height: string }[] = [];
-            images.forEach(img => {
-                originalImageStyles.push({ width: img.style.width, height: img.style.height });
-                const rect = img.getBoundingClientRect();
-                // If it's the school badge or flag, we want to ensure it keeps its aspect ratio
-                // But since we are resizing the parent container to 340x540, the relative sizes might change
-                // However, since we are designing for 340x540, the CSS classes should handle it IF the container is that size.
-                // The issue with 'clone' was that it didn't have the context.
-                // Here we are resizing the ACTUAL container.
-                // So we might not need to force image sizes if the CSS is responsive to the container.
-                // But let's be safe and ensure max-width/height are respected.
-            });
 
             const canvas = await html2canvas(cardRef.current, {
                 backgroundColor: null,
                 scale: 3, // High quality
                 useCORS: true,
                 allowTaint: true,
-                width: 340,
-                height: 540,
                 scrollX: 0,
                 scrollY: 0
             });
-
-            // Restore original styles
-            cardRef.current.style.width = originalStyle.width;
-            cardRef.current.style.height = originalStyle.height;
-            cardRef.current.style.transform = originalStyle.transform;
-            cardRef.current.style.transition = originalStyle.transition;
-            cardRef.current.style.margin = originalStyle.margin;
-
-            // Restore image styles (if we modified them, which we didn't in this block, but good practice)
-            // images.forEach((img, i) => {
-            //    img.style.width = originalImageStyles[i].width;
-            //    img.style.height = originalImageStyles[i].height;
-            // });
             const imageBase64 = canvas.toDataURL('image/png');
 
             // 2. Send to Google Script
