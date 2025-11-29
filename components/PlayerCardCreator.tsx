@@ -133,19 +133,36 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
         setIsSubmitting(true);
 
         try {
-            // 1. Capture the card as an image (PURE WYSIWYG METHOD)
-            // We capture the element exactly as it is on screen. No resizing, no cloning.
-            // This ensures that what the user sees is EXACTLY what is captured.
+            // 1. Capture the card as an image (HIDDEN CONTAINER METHOD)
+            // We capture a dedicated, off-screen container that is ALWAYS 340x540.
+            // This guarantees the output is identical regardless of screen size/responsiveness.
 
-            if (!cardRef.current) return;
+            const captureTarget = document.getElementById('capture-container');
+            if (!captureTarget) {
+                console.error("Capture container not found");
+                return;
+            }
 
-            const canvas = await html2canvas(cardRef.current, {
+            const canvas = await html2canvas(captureTarget, {
                 backgroundColor: null,
                 scale: 3, // High quality
                 useCORS: true,
                 allowTaint: true,
+                width: 340,
+                height: 540,
                 scrollX: 0,
-                scrollY: 0
+                scrollY: 0,
+                onclone: (clonedDoc) => {
+                    // Ensure the cloned element is visible and correctly sized
+                    const clonedElement = clonedDoc.getElementById('capture-container');
+                    if (clonedElement) {
+                        clonedElement.style.display = 'block';
+                        clonedElement.style.visibility = 'visible';
+                        clonedElement.style.position = 'absolute';
+                        clonedElement.style.top = '0';
+                        clonedElement.style.left = '0';
+                    }
+                }
             });
             const imageBase64 = canvas.toDataURL('image/png');
 

@@ -1,0 +1,20 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Goal Post Frame -->
+    <path d="M10 0 V90 M10 10 H90 V90" stroke="#B4F156" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    
+    <!-- Explicit Net Lines (Unrolled Pattern) -->
+    <g clip-path="url(#clip)">
+        <defs>
+            <clipPath id="clip">
+                <rect x="10" y="10" width="80" height="80"/>
+            </clipPath>
+        </defs>
+        <!-- Vertical Zig-Zags simulating the hex net -->
+        <path d="M20 10 V90 M30 10 V90 M40 10 V90 M50 10 V90 M60 10 V90 M70 10 V90 M80 10 V90 M90 10 V90" stroke="white" stroke-width="1" stroke-opacity="0.5" />
+        <path d="M10 20 H90 M10 30 H90 M10 40 H90 M10 50 H90 M10 60 H90 M10 70 H90 M10 80 H90" stroke="white" stroke-width="1" stroke-opacity="0.5" />
+        
+        <!-- Diagonal Cross Hatch for "Net" look -->
+        <path d="M10 10 L90 90 M20 10 L90 80 M30 10 L90 70 M40 10 L90 60 M50 10 L90 50 M60 10 L90 40 M70 10 L90 30 M80 10 L90 20" stroke="white" stroke-width="1.5" />
+        <path d="M10 20 L80 90 M10 30 L70 90 M10 40 L60 90 M10 50 L50 90 M10 60 L40 90 M10 70 L30 90 M10 80 L20 90" stroke="white" stroke-width="1.5" />
+    </g>
+</svg>
