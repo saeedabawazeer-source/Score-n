@@ -133,17 +133,27 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
         setIsSubmitting(true);
 
         try {
-            // 1. Capture the card as an image
-            const canvas = await html2canvas(cardRef.current, {
+            // 1. Capture the card as an image (CLONE METHOD to fix mobile distortion)
+            // We clone the card, force it to desktop size, capture it, then remove it.
+            const clone = cardRef.current.cloneNode(true) as HTMLElement;
+            clone.style.position = 'absolute';
+            clone.style.left = '-9999px';
+            clone.style.top = '0';
+            clone.style.width = '340px'; // Force standard width
+            clone.style.height = '540px'; // Force standard height
+            clone.style.transform = 'none'; // Remove any scaling
+            document.body.appendChild(clone);
+
+            const canvas = await html2canvas(clone, {
                 backgroundColor: null,
-                scale: 3, // Higher quality
-                useCORS: true, // For cross-origin images
+                scale: 2, // High quality
+                useCORS: true,
                 allowTaint: true,
-                scrollX: 0,
-                scrollY: -window.scrollY, // Fix vertical alignment issues
-                width: cardRef.current.offsetWidth,
-                height: cardRef.current.offsetHeight
+                width: 340,
+                height: 540
             });
+
+            document.body.removeChild(clone);
             const imageBase64 = canvas.toDataURL('image/png');
 
             // 2. Send to Google Script
