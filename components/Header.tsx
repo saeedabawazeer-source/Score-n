@@ -20,9 +20,11 @@ export const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8 md:w-10 md:h-10" />
-            <span className="font-display font-bold text-xl md:text-2xl text-white tracking-tighter">SCORE'N</span>
+          <div className="flex items-end gap-0.5">
+            <span className="font-display font-bold text-3xl md:text-4xl text-white tracking-tighter leading-none">SCORE'</span>
+            <div className="relative -bottom-0.5">
+              <Logo className="w-8 h-8 md:w-10 md:h-10" />
+            </div>
           </div>
         </div>
       </div>
