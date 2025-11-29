@@ -152,7 +152,14 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                 body: JSON.stringify({
                     name: name || "Player",
                     email: contactInfo,
-                    image: imageBase64
+                    image: imageBase64,
+                    region: selectedFlag.code,
+                    school: selectedSchool,
+                    position: getDisplayPosition(),
+                    age: bio.age,
+                    height: bio.height,
+                    foot: bio.strongFoot,
+                    heatmap: JSON.stringify(zoneLevels)
                 })
             });
 
@@ -260,13 +267,39 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-mono text-gray-500 uppercase tracking-widest mb-2">Region</label>
-                                    <button
-                                        onClick={() => setIsFlagDropdownOpen(!isFlagDropdownOpen)}
-                                        className="w-full bg-surface border border-white/10 p-3 text-white font-display font-bold flex items-center justify-between focus:border-lime outline-none transition-all rounded-none uppercase"
-                                    >
-                                        <span className="truncate text-sm">{selectedFlag.code}</span>
-                                        <ChevronDown className="w-4 h-4 text-lime" />
-                                    </button>
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setIsFlagDropdownOpen(!isFlagDropdownOpen)}
+                                            className="w-full bg-surface border border-white/10 p-3 text-white font-display font-bold flex items-center justify-between focus:border-lime outline-none transition-all rounded-none uppercase"
+                                        >
+                                            <span className="truncate text-sm">{selectedFlag.code}</span>
+                                            <ChevronDown className="w-4 h-4 text-lime" />
+                                        </button>
+
+                                        {/* Dropdown List */}
+                                        {isFlagDropdownOpen && (
+                                            <div className="absolute top-full left-0 w-full max-h-60 overflow-y-auto bg-[#0a0a0a] border border-white/10 z-50 shadow-xl">
+                                                <input
+                                                    type="text"
+                                                    placeholder="SEARCH..."
+                                                    className="w-full bg-[#0a0a0a] p-2 text-xs text-white border-b border-white/10 outline-none font-mono sticky top-0 z-10 placeholder-gray-600"
+                                                    value={flagSearch}
+                                                    onChange={e => setFlagSearch(e.target.value)}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                                {FLAGS.filter(f => f.label.toLowerCase().includes(flagSearch.toLowerCase()) || f.code.includes(flagSearch.toUpperCase())).map(flag => (
+                                                    <button
+                                                        key={flag.code}
+                                                        onClick={() => { setSelectedFlag(flag); setIsFlagDropdownOpen(false); }}
+                                                        className="w-full text-left p-2 hover:bg-white/5 flex items-center gap-2 transition-colors border-b border-white/5 last:border-0"
+                                                    >
+                                                        <img src={`https://flagcdn.com/w40/${flag.iso2.toLowerCase()}.png`} className="w-5 h-auto" alt={flag.label} />
+                                                        <span className="text-white font-display text-sm">{flag.code}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div>
