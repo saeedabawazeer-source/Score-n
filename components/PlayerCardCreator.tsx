@@ -61,7 +61,7 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
     const cardRef = useRef<HTMLDivElement>(null);
 
     // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyX6Egu9E5TPWZcabatdh8R1724U1FLKaC9hREJ6cIi55N51qqYNSg1bsr-x6VUqqmA/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbye7OakwvDifMsQ-1lSF4UOvPGaf-Wu2PDFzWEfbWWwH9xVN1YKbizPlxvqSJgiQ4Bf/exec";
 
     // Heatmap: 0=Off, 1=Green, 2=Yellow, 3=Red
     const [zoneLevels, setZoneLevels] = useState<Record<number, number>>({ 4: 3, 7: 2, 1: 1 });
