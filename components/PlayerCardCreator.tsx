@@ -623,6 +623,145 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                 </div>
             </div>
 
+            {/* HIDDEN CAPTURE CONTAINER - Always 340x540, used for generating the image */}
+            <div
+                id="capture-container"
+                style={{
+                    position: 'absolute',
+                    top: '-9999px',
+                    left: '-9999px',
+                    width: '340px',
+                    height: '540px',
+                    overflow: 'hidden',
+                    borderRadius: '32px', // Match main card
+                    backgroundColor: '#0a0a0a', // Match main card bg
+                    padding: '2px' // Match main card padding
+                }}
+            >
+                {/* Inner Card Content - Replicated from main card but fixed layout */}
+                <div className="relative w-full h-full bg-[#0a0a0a] flex flex-col overflow-hidden rounded-[30px]">
+
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.02)_25%,rgba(255,255,255,0.02)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.02)_75%,rgba(255,255,255,0.02)_100%)] bg-[length:20px_20px] pointer-events-none"></div>
+                    {/* Background Gradient Overlay */}
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/10 via-transparent to-transparent pointer-events-none"></div>
+
+                    {/* Top Section: Rating & Flag */}
+                    <div className="absolute top-6 left-6 z-20 pointer-events-none flex flex-col items-center min-w-[3rem]">
+                        <div className="font-display text-6xl font-bold text-lime leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                            {overallRating}
+                        </div>
+                        <div className="font-mono text-[9px] text-lime/70 uppercase tracking-widest mt-2 text-center">
+                            LEVEL
+                        </div>
+                        <div className="font-display text-xl font-bold text-white text-center uppercase tracking-wide mt-1 drop-shadow-md">
+                            {getDisplayPosition()}
+                        </div>
+                    </div>
+
+                    <div className="absolute top-6 right-6 z-20 pointer-events-none">
+                        <div className="relative">
+                            {/* Sun Devils Badge */}
+                            {selectedSchool === 'ASU' && (
+                                <div className="absolute right-full top-1/2 -translate-y-1/2 mr-2 w-[55px] h-[55px] flex items-center justify-center">
+                                    <img
+                                        src="/sd2.png"
+                                        alt="Sun Devils"
+                                        className="object-contain drop-shadow-lg"
+                                        style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Flag Container */}
+                            <div className="border-2 border-white/10 p-0.5 bg-black/40 backdrop-blur-sm shadow-lg min-w-[44px] min-h-[28px] flex items-center justify-center rounded">
+                                {selectedFlag.iso2 ? (
+                                    <img
+                                        src={`https://flagcdn.com/w80/${selectedFlag.iso2.toLowerCase()}.png`}
+                                        alt={selectedFlag.label}
+                                        className="w-10 h-auto block"
+                                        style={{ width: '40px', height: 'auto' }}
+                                    />
+                                ) : (
+                                    <Globe className="text-white/50 w-6 h-6" strokeWidth={1.5} />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Image Area */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        {uploadedImage ? (
+                            <div className="relative w-full h-full overflow-hidden">
+                                <img
+                                    src={uploadedImage}
+                                    alt="Player"
+                                    className="absolute w-full h-full object-cover contrast-125"
+                                    style={{
+                                        transform: `translate(${imagePos.x}px, ${imagePos.y}px) scale(1.1)`,
+                                    }}
+                                />
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center pt-12 opacity-80">
+                                <User size={120} strokeWidth={0.5} className="text-white" />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Info Section (Bottom Third) */}
+                    <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-[#050f0d] via-[#0a1a17] to-transparent flex flex-col justify-end p-5 z-10 pointer-events-none">
+                        {/* Name */}
+                        <div className="mb-4 text-center relative">
+                            <h2 className="font-display text-4xl font-bold text-white uppercase tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{name || 'NAME'}</h2>
+                            <div className="w-full h-px bg-gradient-to-r from-transparent via-lime/50 to-transparent mt-2"></div>
+                        </div>
+
+                        {/* Primary Stats */}
+                        <div className="flex justify-between px-4 mb-4">
+                            <div className="text-center">
+                                <span className="font-display font-bold text-white text-xl block leading-none">0</span>
+                                <span className="text-[9px] font-mono text-lime uppercase">GMS</span>
+                            </div>
+                            <div className="text-center">
+                                <span className="font-display font-bold text-white text-xl block leading-none">0</span>
+                                <span className="text-[9px] font-mono text-lime uppercase">GLS</span>
+                            </div>
+                            <div className="text-center">
+                                <span className="font-display font-bold text-white text-xl block leading-none">0</span>
+                                <span className="text-[9px] font-mono text-lime uppercase">AST</span>
+                            </div>
+                        </div>
+
+                        {/* Bio Grid */}
+                        <div className="grid grid-cols-4 gap-2 items-center border-t border-white/5 pt-3">
+                            <div className="text-center border-r border-white/5">
+                                <span className="font-display font-bold text-gray-300 text-sm block">{bio.age}</span>
+                                <span className="text-[8px] font-mono text-gray-500 uppercase">AGE</span>
+                            </div>
+                            <div className="text-center border-r border-white/5">
+                                <span className="font-display font-bold text-gray-300 text-sm block">{bio.height}</span>
+                                <span className="text-[8px] font-mono text-gray-500 uppercase">CM</span>
+                            </div>
+                            <div className="text-center border-r border-white/5">
+                                <span className="font-display font-bold text-gray-300 text-sm block">{bio.strongFoot[0]}</span>
+                                <span className="text-[8px] font-mono text-gray-500 uppercase">FT</span>
+                            </div>
+                            <div className="flex justify-center">
+                                <div className="grid grid-cols-3 gap-[1px] w-5 h-7 bg-black/50 p-[1px]">
+                                    {Array.from({ length: 15 }).map((_, i) => (
+                                        <div
+                                            key={i}
+                                            className={`w-full h-full ${getZoneColor(zoneLevels[i] || 0)}`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </section>
     );
 };
