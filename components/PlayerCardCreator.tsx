@@ -135,9 +135,14 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
         try {
             // 1. Capture the card as an image
             const canvas = await html2canvas(cardRef.current, {
-                backgroundColor: null, // Transparent background if possible, or matches CSS
-                scale: 2, // Higher quality
-                useCORS: true // For cross-origin images (flags, user uploads)
+                backgroundColor: null,
+                scale: 3, // Higher quality
+                useCORS: true, // For cross-origin images
+                allowTaint: true,
+                scrollX: 0,
+                scrollY: -window.scrollY, // Fix vertical alignment issues
+                width: cardRef.current.offsetWidth,
+                height: cardRef.current.offsetHeight
             });
             const imageBase64 = canvas.toDataURL('image/png');
 
