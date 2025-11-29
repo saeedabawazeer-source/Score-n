@@ -15,7 +15,7 @@ export const Logo: React.FC<LogoProps> = ({ className = "w-10 h-10" }) => {
             {/* Hexagonal Net Pattern Definition */}
             <defs>
                 <pattern id="hexNet" x="0" y="0" width="20" height="34.6" patternUnits="userSpaceOnUse">
-                    <path d="M10 0 L20 5.77 V17.32 L10 23.09 L0 17.32 V5.77 L10 0Z" fill="none" stroke="white" strokeWidth="1.5" />
+                    <path d="M10 0 L20 5.77 V17.32 L10 23.09 L0 17.32 V5.77 L10 0Z" fill="none" stroke="white" strokeWidth="2.5" />
                 </pattern>
             </defs>
 
@@ -25,9 +25,9 @@ export const Logo: React.FC<LogoProps> = ({ className = "w-10 h-10" }) => {
                 fill="url(#hexNet)"
             />
 
-            {/* Goal Post Frame - Left Pole Extended Up */}
+            {/* Goal Post Frame - Left Pole Extended Up, No Bottom Bar */}
             <path
-                d="M10 0 V90 H90 V10 H10"
+                d="M10 0 V90 M10 10 H90 V90"
                 stroke="#B4F156"
                 strokeWidth="8"
                 strokeLinecap="round"
@@ -39,3 +39,5 @@ export const Logo: React.FC<LogoProps> = ({ className = "w-10 h-10" }) => {
         </svg>
     );
 };
+
+```
