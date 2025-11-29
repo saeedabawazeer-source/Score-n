@@ -357,6 +357,29 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                             </div>
                         </div>
 
+                        {/* Heatmap Selector */}
+                        <div className="border-t border-white/5 pt-6 mb-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <span className="text-xs font-mono text-gray-500 uppercase">Heatmap</span>
+                                <div className="flex gap-2 text-[9px] font-mono uppercase text-gray-500">
+                                    <span className="flex items-center gap-1"><div className="w-2 h-2 bg-lime rounded-full"></div> 1</span>
+                                    <span className="flex items-center gap-1"><div className="w-2 h-2 bg-yellow-400 rounded-full"></div> 2</span>
+                                    <span className="flex items-center gap-1"><div className="w-2 h-2 bg-red-600 rounded-full"></div> 3</span>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-1 w-full aspect-[3/4] max-w-[180px] mx-auto bg-black/20 p-2 border border-white/10">
+                                {Array.from({ length: 15 }).map((_, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => toggleZone(i)}
+                                        className={`w-full h-full border border-white/5 transition-all duration-200 ${getZoneColor(zoneLevels[i] || 0)} hover:bg-white/10`}
+                                    />
+                                ))}
+                            </div>
+                            <p className="text-center text-[9px] font-mono text-gray-600 mt-2 uppercase">Tap to toggle intensity</p>
+                        </div>
+
                         {/* Submit */}
                         <div className="border-t border-white/5 pt-6">
                             {isSubmitted ? (
