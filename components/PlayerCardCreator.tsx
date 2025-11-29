@@ -380,36 +380,11 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                             <p className="text-center text-[9px] font-mono text-gray-600 mt-2 uppercase">Tap to toggle intensity</p>
                         </div>
 
-                        {/* Submit */}
-                        <div className="border-t border-white/5 pt-6">
-                            {isSubmitted ? (
-                                <div className="bg-lime p-4 text-center">
-                                    <h3 className="text-black font-display font-bold text-xl uppercase">ID CONFIRMED</h3>
-                                    <p className="text-black text-xs font-mono uppercase mt-1">See you on the field</p>
-                                </div>
-                            ) : (
-                                <div className="space-y-3">
-                                    <input
-                                        type="text"
-                                        placeholder="PHONE OR EMAIL"
-                                        value={contactInfo}
-                                        onChange={(e) => setContactInfo(e.target.value)}
-                                        className="w-full bg-surface border border-white/10 p-3 text-white focus:border-lime outline-none text-sm font-mono rounded-none placeholder-gray-600"
-                                    />
-                                    <button
-                                        onClick={handleSaveToWaitlist}
-                                        disabled={isSubmitting}
-                                        className="w-full bg-lime hover:bg-white disabled:opacity-50 text-black font-display font-bold uppercase py-4 text-lg tracking-widest transition-all flex items-center justify-center gap-2 rounded-none shadow-[0_0_20px_rgba(180,241,86,0.2)]"
-                                    >
-                                        {isSubmitting ? <Loader2 className="animate-spin w-5 h-5" /> : 'MINT CARD'}
-                                    </button>
-                                </div>
-                            )}
-                        </div>
+
                     </div>
 
                     {/* PREVIEW PANEL - Full width on mobile, right on desktop */}
-                    <div className="w-full lg:col-span-7 flex items-center justify-center py-8 lg:py-0">
+                    <div className="w-full lg:col-span-7 flex flex-col items-center justify-center py-8 lg:py-0">
 
                         {/* The Card - Natural mobile size */}
                         <div
@@ -562,6 +537,33 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Submit Section - Now Under Card */}
+                        <div className="w-full max-w-[340px] mt-8">
+                            {isSubmitted ? (
+                                <div className="bg-lime p-4 text-center">
+                                    <h3 className="text-black font-display font-bold text-xl uppercase">ID CONFIRMED</h3>
+                                    <p className="text-black text-xs font-mono uppercase mt-1">See you on the field</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    <input
+                                        type="email"
+                                        placeholder="ENTER EMAIL"
+                                        value={contactInfo}
+                                        onChange={(e) => setContactInfo(e.target.value)}
+                                        className="w-full bg-surface border border-white/10 p-3 text-white focus:border-lime outline-none text-sm font-mono rounded-none placeholder-gray-600 text-center"
+                                    />
+                                    <button
+                                        onClick={handleSaveToWaitlist}
+                                        disabled={isSubmitting}
+                                        className="w-full bg-lime hover:bg-white disabled:opacity-50 text-black font-display font-bold uppercase py-4 text-lg tracking-widest transition-all flex items-center justify-center gap-2 rounded-none shadow-[0_0_20px_rgba(180,241,86,0.2)]"
+                                    >
+                                        {isSubmitting ? <Loader2 className="animate-spin w-5 h-5" /> : 'MINT CARD'}
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                     </div>
