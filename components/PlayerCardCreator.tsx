@@ -89,7 +89,7 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
             case 1: return `bg-lime ${opacity}`; // Level 1: Green (Brand Lime)
             case 2: return `bg-yellow-400 ${opacity}`; // Level 2: Yellow
             case 3: return `bg-red-600 ${opacity}`; // Level 3: Red
-            default: return 'bg-transparent';
+            default: return 'bg-white/10'; // Visible empty state
         }
     };
 
@@ -446,6 +446,7 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                                     src="/sd2.png"
                                                     alt="Sun Devils"
                                                     className="w-full h-full object-contain drop-shadow-lg"
+                                                    style={{ width: '55px', height: '55px' }}
                                                 />
                                             </div>
                                         )}
@@ -457,6 +458,7 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                                     src={`https://flagcdn.com/w80/${selectedFlag.iso2.toLowerCase()}.png`}
                                                     alt={selectedFlag.label}
                                                     className="w-10 h-auto block"
+                                                    style={{ width: '40px', height: 'auto' }}
                                                 />
                                             ) : (
                                                 <Globe className="text-white/50 w-6 h-6" strokeWidth={1.5} />
