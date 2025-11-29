@@ -147,7 +147,7 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
             // However, for a simple fire-and-forget or basic submission, standard POST works if the script handles CORS (which it can't fully on free tier easily).
             // Actually, standard POST with 'Content-Type': 'text/plain' (to avoid preflight) usually works for Google Apps Script.
 
-            await fetch(GOOGLE_SCRIPT_URL, {
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({
                     name: name || "Player",
@@ -162,6 +162,11 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                     heatmap: JSON.stringify(zoneLevels)
                 })
             });
+
+            const result = await response.json();
+            if (result.status === 'error') {
+                throw new Error(result.message);
+            }
 
             setIsSubmitted(true);
         } catch (error) {
