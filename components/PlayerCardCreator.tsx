@@ -425,11 +425,11 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                 <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
 
                                 {/* Top Section: Rating & Flag */}
-                                <div className="absolute top-6 left-6 z-20 pointer-events-none flex flex-col items-center w-12">
-                                    <div className="font-display text-6xl font-bold text-lime leading-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                                <div className="absolute top-6 left-6 z-20 pointer-events-none flex flex-col items-center min-w-[3rem]">
+                                    <div className="font-display text-6xl font-bold text-lime leading-[0.8] drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
                                         {overallRating}
                                     </div>
-                                    <div className="font-mono text-[9px] text-lime/70 uppercase tracking-widest mt-2 text-center">
+                                    <div className="font-mono text-[9px] text-lime/70 uppercase tracking-widest mt-3 text-center">
                                         LEVEL
                                     </div>
                                     <div className="font-display text-xl font-bold text-white text-center uppercase tracking-wide mt-1 drop-shadow-md">
@@ -441,12 +441,12 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                     <div className="relative">
                                         {/* Sun Devils Badge - Absolute positioned to LEFT of flag */}
                                         {selectedSchool === 'ASU' && (
-                                            <div className="absolute right-full top-1/2 -translate-y-1/2 mr-0 w-[55px] h-[55px] flex items-center justify-center animate-in fade-in zoom-in duration-300">
+                                            <div className="absolute right-full top-1/2 -translate-y-1/2 mr-2 w-[55px] h-[55px] flex items-center justify-center animate-in fade-in zoom-in duration-300">
                                                 <img
                                                     src="/sd2.png"
                                                     alt="Sun Devils"
-                                                    className="w-full h-full object-contain drop-shadow-lg"
-                                                    style={{ width: '55px', height: '55px' }}
+                                                    className="object-contain drop-shadow-lg"
+                                                    style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
                                                 />
                                             </div>
                                         )}
