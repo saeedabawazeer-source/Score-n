@@ -666,9 +666,9 @@ export const Hero: React.FC<HeroProps> = ({ onCreateCard }) => {
       </div>
 
       {/* Desktop: Scattered Cards - MOVED TO END for stacking context */}
-      <div className="hidden md:block absolute inset-0 pointer-events-none z-[100]">
+      <div className="hidden md:block absolute inset-0 pointer-events-none z-0">
         {scatteredCards.map((card, index) => (
-          <div key={index} className={`absolute ${card.positionClass} transition-transform duration-700 hover:scale-105 z-[100]`}>
+          <div key={index} className={`absolute ${card.positionClass} transition-transform duration-700 hover:scale-105 z-0`}>
             <PlayerCard {...card} />
           </div>
         ))}
