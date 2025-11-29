@@ -15,7 +15,9 @@ export const Logo: React.FC<LogoProps> = ({ className = "w-10 h-10" }) => {
             {/* Hexagonal Net Pattern Definition */}
             <defs>
                 <pattern id="hexNet" x="0" y="0" width="20" height="34.64" patternUnits="userSpaceOnUse">
-                    <path d="M10 0 L20 5.77 V17.32 L10 23.09 L0 17.32 V5.77 L10 0Z" fill="none" stroke="white" strokeWidth="3" strokeLinejoin="round" />
+                    {/* Seamless "Y" tile that forms hexagons */}
+                    <path d="M10 17.32 V0 M0 5.77 L10 11.55 L20 5.77" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M10 34.64 V17.32 M0 23.09 L10 28.87 L20 23.09" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                 </pattern>
             </defs>
 
