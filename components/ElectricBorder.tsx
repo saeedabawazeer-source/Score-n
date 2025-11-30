@@ -9,26 +9,45 @@ interface ElectricBorderProps {
 export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, className = '' }) => {
     const id = React.useId();
     const filterId = `turbulent-displace-${id.replace(/:/g, '')}`;
-    const turbulenceRef1 = React.useRef<SVGFETurbulenceElement>(null);
-    const turbulenceRef2 = React.useRef<SVGFETurbulenceElement>(null);
+
+    // Refs for the feOffset elements we need to animate
+    const offsetRef1 = React.useRef<SVGFEOffsetElement>(null);
+    const offsetRef2 = React.useRef<SVGFEOffsetElement>(null);
+    const offsetRef3 = React.useRef<SVGFEOffsetElement>(null);
+    const offsetRef4 = React.useRef<SVGFEOffsetElement>(null);
 
     React.useEffect(() => {
         let frameId: number;
-        let lastTime = 0;
-        const fps = 15; // Limit to 15fps for a "crackling" look, not "epileptic"
-        const interval = 1000 / fps;
+        const duration = 6000; // 6s duration from original CSS
 
         const animate = (time: number) => {
-            if (time - lastTime > interval) {
-                lastTime = time;
-                // Randomize seeds to create crackling effect
-                if (turbulenceRef1.current) {
-                    turbulenceRef1.current.setAttribute('seed', Math.floor(Math.random() * 100).toString());
-                }
-                if (turbulenceRef2.current) {
-                    turbulenceRef2.current.setAttribute('seed', Math.floor(Math.random() * 100).toString());
-                }
+            // Calculate progress (0 to 1) based on time
+            const progress = (time % duration) / duration;
+
+            // 1. dy: 700 -> 0
+            if (offsetRef1.current) {
+                const val = 700 * (1 - progress);
+                offsetRef1.current.setAttribute('dy', val.toString());
             }
+
+            // 2. dy: 0 -> -700
+            if (offsetRef2.current) {
+                const val = -700 * progress;
+                offsetRef2.current.setAttribute('dy', val.toString());
+            }
+
+            // 3. dx: 490 -> 0
+            if (offsetRef3.current) {
+                const val = 490 * (1 - progress);
+                offsetRef3.current.setAttribute('dx', val.toString());
+            }
+
+            // 4. dx: 0 -> -490
+            if (offsetRef4.current) {
+                const val = -490 * progress;
+                offsetRef4.current.setAttribute('dx', val.toString());
+            }
+
             frameId = requestAnimationFrame(animate);
         };
 
@@ -38,19 +57,25 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
 
     return (
         <div className={`electric-border-wrapper relative w-full h-full ${className}`}>
-            {/* SVG Filter Definition - 1px size to prevent culling on mobile */}
-            <svg className="absolute top-0 left-0 w-[1px] h-[1px] overflow-hidden pointer-events-none" aria-hidden="true" style={{ opacity: 0 }}>
+            {/* SVG Filter Definition */}
+            <svg className="absolute w-0 h-0 overflow-hidden" aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
                 <defs>
                     <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
-                        {/* Animate seeds via JS */}
-                        <feTurbulence ref={turbulenceRef1} type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise1" seed="1" />
-                        <feOffset in="noise1" dx="0" dy="0" result="offsetNoise1" />
+                        <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise1" seed="1" />
+                        <feOffset ref={offsetRef1} in="noise1" dx="0" dy="0" result="offsetNoise1" />
 
-                        <feTurbulence ref={turbulenceRef2} type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise2" seed="2" />
-                        <feOffset in="noise2" dx="0" dy="0" result="offsetNoise2" />
+                        <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise2" seed="1" />
+                        <feOffset ref={offsetRef2} in="noise2" dx="0" dy="0" result="offsetNoise2" />
+
+                        <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise1" seed="2" />
+                        <feOffset ref={offsetRef3} in="noise1" dx="0" dy="0" result="offsetNoise3" />
+
+                        <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise2" seed="2" />
+                        <feOffset ref={offsetRef4} in="noise2" dx="0" dy="0" result="offsetNoise4" />
 
                         <feComposite in="offsetNoise1" in2="offsetNoise2" result="part1" />
-                        <feBlend in="part1" mode="color-dodge" result="combinedNoise" />
+                        <feComposite in="offsetNoise3" in2="offsetNoise4" result="part2" />
+                        <feBlend in="part1" in2="part2" mode="color-dodge" result="combinedNoise" />
 
                         <feDisplacementMap in="SourceGraphic" in2="combinedNoise" scale="30" xChannelSelector="R" yChannelSelector="B" />
                     </filter>
