@@ -245,10 +245,12 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
             return "CM";
         } else if (avgR < 3.8) { // Row 3 (Defensive Mid)
             return "CDM";
-        } else { // Bottom Row (Defense)
+        } else if (avgR < 4.8) { // Row 4 (Defense)
             if (avgC < 0.8) return "LB";
             if (avgC > 1.2) return "RB";
             return "CB";
+        } else { // Row 5 (Goal)
+            return "GK";
         }
     };
 
@@ -398,8 +400,8 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-1 w-full aspect-[3/4] max-w-[180px] mx-auto bg-black/20 p-2 border border-white/10">
-                                {Array.from({ length: 15 }).map((_, i) => (
+                            <div className="grid grid-cols-3 gap-1 w-full aspect-[1/2] max-w-[180px] mx-auto bg-black/20 p-2 border border-white/10">
+                                {Array.from({ length: 18 }).map((_, i) => (
                                     <button
                                         key={i}
                                         onClick={() => toggleZone(i)}
@@ -567,7 +569,7 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                         <div className="flex justify-center">
                                             {/* Dynamic Heatmap on Card */}
                                             <div className="grid grid-cols-3 gap-[1px] w-5 h-7 bg-black/50 p-[1px]">
-                                                {Array.from({ length: 15 }).map((_, i) => (
+                                                {Array.from({ length: 18 }).map((_, i) => (
                                                     <div
                                                         key={i}
                                                         className={`w-full h-full ${getZoneColor(zoneLevels[i] || 0)}`}
@@ -750,7 +752,7 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                             </div>
                             <div className="flex justify-center">
                                 <div className="grid grid-cols-3 gap-[1px] w-5 h-7 bg-black/50 p-[1px]">
-                                    {Array.from({ length: 15 }).map((_, i) => (
+                                    {Array.from({ length: 18 }).map((_, i) => (
                                         <div
                                             key={i}
                                             className={`w-full h-full ${getZoneColor(zoneLevels[i] || 0)}`}
