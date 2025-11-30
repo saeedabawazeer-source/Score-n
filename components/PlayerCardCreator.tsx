@@ -203,8 +203,14 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
     };
 
     const getDisplayPosition = () => {
-        // Convert zones object to array of active zones
-        const zones = Object.entries(zoneLevels).map(([k, v]) => ({ index: Number(k), level: v }));
+        // Check for GK Zone (Index 15) - Priority
+        if (zoneLevels[15] > 0) return "GK";
+
+        // Convert zones object to array of active zones (excluding GK)
+        const zones = Object.entries(zoneLevels)
+            .map(([k, v]) => ({ index: Number(k), level: v as number }))
+            .filter(z => z.index < 15);
+
         if (zones.length === 0) return "N/A";
 
         // Logic to determine position based on center of mass of highest level zones
@@ -245,12 +251,10 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
             return "CM";
         } else if (avgR < 3.8) { // Row 3 (Defensive Mid)
             return "CDM";
-        } else if (avgR < 4.8) { // Row 4 (Defense)
+        } else { // Bottom Row (Defense)
             if (avgC < 0.8) return "LB";
             if (avgC > 1.2) return "RB";
             return "CB";
-        } else { // Row 5 (Goal)
-            return "GK";
         }
     };
 
@@ -400,8 +404,9 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-1 w-full aspect-[1/2] max-w-[180px] mx-auto bg-black/20 p-2 border border-white/10">
-                                {Array.from({ length: 18 }).map((_, i) => (
+                            {/* Main Grid (3x5) */}
+                            <div className="grid grid-cols-3 gap-1 w-full aspect-[3/5] max-w-[180px] mx-auto bg-black/20 p-2 border border-white/10 mb-1">
+                                {Array.from({ length: 15 }).map((_, i) => (
                                     <button
                                         key={i}
                                         onClick={() => toggleZone(i)}
@@ -409,6 +414,17 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                     />
                                 ))}
                             </div>
+
+                            {/* Goal Bar (GK) */}
+                            <div className="w-full max-w-[180px] mx-auto h-8 bg-black/20 px-2 pb-2 border-x border-b border-white/10">
+                                <button
+                                    onClick={() => toggleZone(15)}
+                                    className={`w-full h-full border border-white/5 transition-all duration-200 flex items-center justify-center ${getZoneColor(zoneLevels[15] || 0)}`}
+                                >
+                                    <span className="text-[9px] font-mono font-bold text-black/50 uppercase">Goal</span>
+                                </button>
+                            </div>
+
                             <p className="text-center text-[9px] font-mono text-gray-600 mt-2 uppercase">Tap to toggle intensity</p>
                         </div>
 
@@ -568,13 +584,19 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                         </div>
                                         <div className="flex justify-center">
                                             {/* Dynamic Heatmap on Card */}
-                                            <div className="grid grid-cols-3 gap-[1px] w-5 h-7 bg-black/50 p-[1px]">
-                                                {Array.from({ length: 18 }).map((_, i) => (
-                                                    <div
-                                                        key={i}
-                                                        className={`w-full h-full ${getZoneColor(zoneLevels[i] || 0)}`}
-                                                    />
-                                                ))}
+                                            <div className="flex flex-col gap-[1px] w-5">
+                                                <div className="grid grid-cols-3 gap-[1px] w-full aspect-[3/5] bg-black/50 p-[1px]">
+                                                    {Array.from({ length: 15 }).map((_, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className={`w-full h-full ${getZoneColor(zoneLevels[i] || 0, true)}`}
+                                                        />
+                                                    ))}
+                                                </div>
+                                                {/* Goal Bar */}
+                                                <div className="w-full h-1.5 bg-black/50 p-[1px]">
+                                                    <div className={`w-full h-full ${getZoneColor(zoneLevels[15] || 0, true)}`} />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -751,13 +773,19 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                 <span className="text-[8px] font-mono text-gray-500 uppercase">FT</span>
                             </div>
                             <div className="flex justify-center">
-                                <div className="grid grid-cols-3 gap-[1px] w-5 h-7 bg-black/50 p-[1px]">
-                                    {Array.from({ length: 18 }).map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className={`w-full h-full ${getZoneColor(zoneLevels[i] || 0)}`}
-                                        />
-                                    ))}
+                                <div className="flex flex-col gap-[1px] w-5">
+                                    <div className="grid grid-cols-3 gap-[1px] w-full aspect-[3/5] bg-black/50 p-[1px]">
+                                        {Array.from({ length: 15 }).map((_, i) => (
+                                            <div
+                                                key={i}
+                                                className={`w-full h-full ${getZoneColor(zoneLevels[i] || 0, true)}`}
+                                            />
+                                        ))}
+                                    </div>
+                                    {/* Goal Bar */}
+                                    <div className="w-full h-1.5 bg-black/50 p-[1px]">
+                                        <div className={`w-full h-full ${getZoneColor(zoneLevels[15] || 0, true)}`} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
