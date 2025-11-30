@@ -7,12 +7,15 @@ interface ElectricBorderProps {
 }
 
 export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, className = '' }) => {
+    const id = React.useId();
+    const filterId = `turbulent-displace-${id.replace(/:/g, '')}`;
+
     return (
         <div className={`electric-border-wrapper relative w-full h-full ${className}`}>
             {/* SVG Filter Definition */}
-            <svg className="absolute w-0 h-0 overflow-hidden" aria-hidden="true">
+            <svg className="absolute w-0 h-0 overflow-hidden" aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
                 <defs>
-                    <filter id="turbulent-displace" x="-50%" y="-50%" width="200%" height="200%">
+                    <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
                         <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise1" seed="1" />
                         <feOffset in="noise1" dx="0" dy="0" result="offsetNoise1">
                             <animate attributeName="dy" values="700; 0" dur="6s" repeatCount="indefinite" calcMode="linear" />
@@ -45,7 +48,7 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
             <div className="card-container">
                 <div className="inner-container">
                     <div className="border-outer">
-                        <div className="main-card-border"></div>
+                        <div className="main-card-border" style={{ filter: `url(#${filterId})` }}></div>
                     </div>
                     <div className="glow-layer-1"></div>
                     <div className="glow-layer-2"></div>
