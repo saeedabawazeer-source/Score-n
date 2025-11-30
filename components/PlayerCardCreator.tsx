@@ -203,14 +203,8 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
     };
 
     const getDisplayPosition = () => {
-        // Check for GK Zone (Index 15) - Priority
-        if (zoneLevels[15] > 0) return "GK";
-
-        // Convert zones object to array of active zones (excluding GK)
-        const zones = Object.entries(zoneLevels)
-            .map(([k, v]) => ({ index: Number(k), level: v as number }))
-            .filter(z => z.index < 15);
-
+        // Convert zones object to array of active zones
+        const zones = Object.entries(zoneLevels).map(([k, v]) => ({ index: Number(k), level: v as number }));
         if (zones.length === 0) return "N/A";
 
         // Logic to determine position based on center of mass of highest level zones
@@ -220,6 +214,7 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
         // Row 2: 6,7,8 (Mid)
         // Row 3: 9,10,11 (DM)
         // Row 4: 12,13,14 (Def)
+        // Row 5: 15 (GK)
 
         // Find max level (focus on Red zones first)
         const maxLevel = Math.max(...zones.map(z => z.level));
@@ -228,8 +223,14 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
         // Calculate average Row and Column
         let sumR = 0, sumC = 0;
         primaryZones.forEach(z => {
-            const r = Math.floor(z.index / 3); // 0 to 4
-            const c = z.index % 3; // 0 to 2
+            let r, c;
+            if (z.index === 15) {
+                r = 5; // GK Row
+                c = 1; // Center Column
+            } else {
+                r = Math.floor(z.index / 3); // 0 to 4
+                c = z.index % 3; // 0 to 2
+            }
             sumR += r;
             sumC += c;
         });
@@ -251,10 +252,12 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
             return "CM";
         } else if (avgR < 3.8) { // Row 3 (Defensive Mid)
             return "CDM";
-        } else { // Bottom Row (Defense)
+        } else if (avgR < 4.8) { // Row 4 (Defense)
             if (avgC < 0.8) return "LB";
             if (avgC > 1.2) return "RB";
             return "CB";
+        } else { // Row 5 (Goal)
+            return "GK";
         }
     };
 
@@ -415,13 +418,13 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                 ))}
                             </div>
 
-                            {/* Goal Bar (GK) */}
-                            <div className="w-full max-w-[180px] mx-auto h-8 bg-black/20 px-2 pb-2 border-x border-b border-white/10">
+                            {/* Goal Bar (GK) - Centered Square */}
+                            <div className="w-full max-w-[180px] mx-auto flex justify-center pb-2">
                                 <button
                                     onClick={() => toggleZone(15)}
-                                    className={`w-full h-full border border-white/5 transition-all duration-200 flex items-center justify-center ${getZoneColor(zoneLevels[15] || 0)}`}
+                                    className={`w-12 h-8 border border-white/5 border-t-0 transition-all duration-200 flex items-center justify-center ${getZoneColor(zoneLevels[15] || 0)}`}
                                 >
-                                    <span className="text-[9px] font-mono font-bold text-black/50 uppercase">Goal</span>
+                                    <span className="text-[9px] font-mono font-bold text-black/50 uppercase">GK</span>
                                 </button>
                             </div>
 
@@ -593,9 +596,9 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                                         />
                                                     ))}
                                                 </div>
-                                                {/* Goal Bar */}
-                                                <div className="w-full h-1.5 bg-black/50 p-[1px]">
-                                                    <div className={`w-full h-full ${getZoneColor(zoneLevels[15] || 0, true)}`} />
+                                                {/* Goal Bar - Centered Square */}
+                                                <div className="w-full flex justify-center bg-black/50 p-[1px]">
+                                                    <div className={`w-[33%] aspect-square ${getZoneColor(zoneLevels[15] || 0, true)}`} />
                                                 </div>
                                             </div>
                                         </div>
@@ -782,9 +785,9 @@ export const PlayerCardCreator: React.FC<PlayerCardCreatorProps> = ({ isActive }
                                             />
                                         ))}
                                     </div>
-                                    {/* Goal Bar */}
-                                    <div className="w-full h-1.5 bg-black/50 p-[1px]">
-                                        <div className={`w-full h-full ${getZoneColor(zoneLevels[15] || 0, true)}`} />
+                                    {/* Goal Bar - Centered Square */}
+                                    <div className="w-full flex justify-center bg-black/50 p-[1px]">
+                                        <div className={`w-[33%] aspect-square ${getZoneColor(zoneLevels[15] || 0, true)}`} />
                                     </div>
                                 </div>
                             </div>
