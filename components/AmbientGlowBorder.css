@@ -28,12 +28,12 @@
     background-image:
         conic-gradient(transparent 0deg,
             transparent 60deg,
-            #00ffc3 100deg,
-            #00ffc3 110deg,
+            var(--glow-color-1, #00ffc3) 100deg,
+            var(--glow-color-1, #00ffc3) 110deg,
             transparent 150deg,
             transparent 240deg,
-            #a94cff 280deg,
-            #a94cff 290deg,
+            var(--glow-color-2, #a94cff) 280deg,
+            var(--glow-color-2, #a94cff) 290deg,
             transparent 330deg,
             transparent 360deg);
     animation: spin 8s linear infinite;

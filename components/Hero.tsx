@@ -506,6 +506,23 @@ const PlayerCard: React.FC<{
     );
   }
 
+  if (name === 'WILLIAM') {
+    return (
+      <div
+        className={responsiveClass}
+        style={wrapperStyle}
+      >
+        <div className="scale-[0.35] md:scale-100 origin-center transition-transform duration-500">
+          <div className="w-[340px] h-[540px] overflow-visible">
+            <AmbientGlowBorder color1="#FFD700" color2="#C0C0C0">
+              <CardContent {...props} />
+            </AmbientGlowBorder>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={responsiveClass}
@@ -563,6 +580,8 @@ export const Hero: React.FC<HeroProps> = ({ onCreateCard }) => {
                     <ElectricBorder><CardContent {...card} /></ElectricBorder>
                   ) : card.name === 'RODRI' ? (
                     <AmbientGlowBorder><CardContent {...card} /></AmbientGlowBorder>
+                  ) : card.name === 'WILLIAM' ? (
+                    <AmbientGlowBorder color1="#FFD700" color2="#C0C0C0"><CardContent {...card} /></AmbientGlowBorder>
                   ) : (
                     <div className="relative w-full h-full rounded-[32px] p-[2px] bg-gradient-to-b from-[#333] via-[#222] to-lime/20 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
                       <CardContent {...card} />
@@ -652,6 +671,8 @@ export const Hero: React.FC<HeroProps> = ({ onCreateCard }) => {
                     <ElectricBorder><CardContent {...card} /></ElectricBorder>
                   ) : card.name === 'RODRI' ? (
                     <AmbientGlowBorder><CardContent {...card} /></AmbientGlowBorder>
+                  ) : card.name === 'WILLIAM' ? (
+                    <AmbientGlowBorder color1="#FFD700" color2="#C0C0C0"><CardContent {...card} /></AmbientGlowBorder>
                   ) : (
                     <div className="relative w-full h-full rounded-[32px] p-[2px] bg-gradient-to-b from-[#333] via-[#222] to-lime/20 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
                       <CardContent {...card} />

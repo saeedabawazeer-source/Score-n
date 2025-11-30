@@ -1,15 +1,9 @@
-/* Electric Border CSS */
+/* Electric Border CSS - Mobile Optimized */
 
 .electric-border-wrapper {
-  --electric-border-color: #dd8448;
-  --electric-light-color: #ffb380;
-  /* Fallback for oklch */
-  --gradient-color: rgba(221, 132, 72, 0.4);
-  --electric-light-color: #ffa366;
-  --electric-gradient-color: rgba(221, 132, 72, 0.4);
-  --color-neutral-900: #1a1a1a;
+  --electric-color: #dd8448;
+  --electric-glow: rgba(221, 132, 72, 0.6);
   overflow: visible;
-  /* Allow badges to overflow */
 }
 
 .electric-border-wrapper .card-container {
@@ -18,94 +12,102 @@
   height: 100%;
   border-radius: 32px;
   overflow: visible;
-  /* Allow badges to overflow */
 }
 
-.electric-border-wrapper .inner-container {
+/* Base Glow Layer */
+.electric-border-wrapper .base-glow {
   position: absolute;
-  inset: 0;
-  border-radius: 32px;
-  pointer-events: none;
+  inset: -5px;
+  border-radius: 36px;
+  background: var(--electric-color);
+  filter: blur(15px);
+  opacity: 0.4;
+  animation: pulse-glow 2s ease-in-out infinite;
+  z-index: 0;
 }
 
-.electric-border-wrapper .border-outer {
-  border: 2px solid rgba(221, 132, 72, 0.5);
-  border-radius: 34px;
-  position: absolute;
-  inset: -2px;
-  /* 2px outside card edge */
-  pointer-events: none;
-  z-index: 10;
-  /* Lower than badges */
-}
-
-.electric-border-wrapper .main-card-border {
+/* Jitter Border 1 */
+.electric-border-wrapper .jitter-border-1 {
   position: absolute;
   inset: -2px;
-  /* 2px outside card edge */
   border-radius: 34px;
-  border: 2px solid var(--electric-border-color);
-  filter: url(#turbulent-displace);
-  pointer-events: none;
-  z-index: 10;
-  /* Lower than badges */
-}
-
-.electric-border-wrapper .glow-layer-1 {
-  border: 2px solid rgba(221, 132, 72, 0.6);
-  border-radius: 34px;
-  position: absolute;
-  inset: -2px;
-  /* 2px outside card edge */
-  filter: blur(2px);
-  pointer-events: none;
-  z-index: 5;
-  /* Lower than badges */
-}
-
-.electric-border-wrapper .glow-layer-2 {
-  border: 1px solid var(--electric-light-color);
-  border-radius: 34px;
-  position: absolute;
-  inset: -2px;
-  /* 2px outside card edge */
-  filter: blur(4px);
-  pointer-events: none;
+  border: 2px solid var(--electric-color);
   opacity: 0.8;
-  z-index: 5;
-  /* Lower than badges */
-}
-
-.electric-border-wrapper .overlay-1 {
-  position: absolute;
-  inset: 0;
-  border-radius: 32px;
-  opacity: 0.3;
-  /* Reduced from 1 */
-  mix-blend-mode: overlay;
-  filter: blur(10px);
-  background: linear-gradient(-30deg,
-      rgba(255, 255, 255, 0.5),
-      transparent 40%,
-      transparent 60%,
-      rgba(255, 255, 255, 0.5));
-  pointer-events: none;
   z-index: 10;
+  animation: jitter-1 0.2s linear infinite;
 }
 
-.electric-border-wrapper .overlay-2 {
-  display: none;
-  /* Removed second overlay to reduce heavy glow */
-}
-
-.electric-border-wrapper .background-glow {
+/* Jitter Border 2 (Offset) */
+.electric-border-wrapper .jitter-border-2 {
   position: absolute;
-  inset: -10px;
-  /* Constrained glow */
-  border-radius: 40px;
-  filter: blur(20px);
-  opacity: 0.2;
-  z-index: -1;
-  background: var(--electric-border-color);
-  pointer-events: none;
+  inset: -2px;
+  border-radius: 34px;
+  border: 2px solid #fff;
+  opacity: 0.5;
+  z-index: 10;
+  animation: jitter-2 0.3s linear infinite;
+  mix-blend-mode: overlay;
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes jitter-1 {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(1px, 1px);
+  }
+
+  50% {
+    transform: translate(-1px, -1px);
+  }
+
+  75% {
+    transform: translate(-1px, 1px);
+  }
+
+  100% {
+    transform: translate(1px, -1px);
+  }
+}
+
+@keyframes jitter-2 {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0.3;
+  }
+
+  25% {
+    transform: translate(-1px, 0);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: translate(1px, 0);
+    opacity: 0.3;
+  }
+
+  75% {
+    transform: translate(0, 1px);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translate(0, -1px);
+    opacity: 0.3;
+  }
 }
