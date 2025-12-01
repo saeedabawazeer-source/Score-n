@@ -23,8 +23,9 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
 
         // Initialize Noise Lines
         // We use a closed loop for the border
-        const lightning = new NoiseLine(8, { base: 60, amplitude: 0.8, speed: 0.06 }); // Main bolt
-        const lightning2 = new NoiseLine(8, { base: 40, amplitude: 0.5, speed: 0.04 }); // Secondary bolt
+        // Reduced speed and amplitude for a "thinner, slower" look
+        const lightning = new NoiseLine(8, { base: 60, amplitude: 0.4, speed: 0.02 }); // Main bolt
+        const lightning2 = new NoiseLine(8, { base: 40, amplitude: 0.3, speed: 0.015 }); // Secondary bolt
 
         const resize = () => {
             if (!canvas.parentElement) return;
@@ -94,17 +95,17 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
             };
 
             // Draw Layers (Glow + Core)
-            // Outer Glow
-            drawBolt(lightning, 'rgba(221, 132, 72, 0.3)', 12, 20);
+            // Outer Glow - Thinner (12 -> 6)
+            drawBolt(lightning, 'rgba(221, 132, 72, 0.3)', 6, 15);
 
-            // Inner Glow
-            drawBolt(lightning, 'rgba(221, 132, 72, 0.8)', 4, 10);
+            // Inner Glow - Thinner (4 -> 2)
+            drawBolt(lightning, 'rgba(221, 132, 72, 0.8)', 2, 8);
 
-            // White Core
-            drawBolt(lightning, '#ffb380', 2, 0);
+            // White Core - Thinner (2 -> 1)
+            drawBolt(lightning, '#ffb380', 1, 0);
 
             // Secondary Bolt (Fainter, faster)
-            drawBolt(lightning2, 'rgba(255, 255, 255, 0.4)', 1, 5);
+            drawBolt(lightning2, 'rgba(255, 255, 255, 0.3)', 0.5, 4);
 
             animationFrameId = requestAnimationFrame(draw);
         };
