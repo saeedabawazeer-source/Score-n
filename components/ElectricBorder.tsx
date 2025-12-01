@@ -42,8 +42,9 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
             const rect = canvas.getBoundingClientRect();
             const w = rect.width;
             const h = rect.height;
-            const r = 32; // Border radius
-            const p = 0; // Keep path at card edge for visibility
+            const r = 32; // Border radius  
+            const borderPadding = 3; // Extra padding to account for canvas inset
+            const p = borderPadding; // Draw inside the black border area
 
             ctx.clearRect(0, 0, w, h);
 
@@ -53,10 +54,11 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
 
-            // Path segments
-            const topLen = w - p * 2 - 2 * r;
-            const rightLen = h - p * 2 - 2 * r;
-            const cornerLen = 0.5 * Math.PI * r;
+            // Path segments (adjust radius for border padding)
+            const adjustedRadius = r - borderPadding;
+            const topLen = w - p * 2 - 2 * adjustedRadius;
+            const rightLen = h - p * 2 - 2 * adjustedRadius;
+            const cornerLen = 0.5 * Math.PI * adjustedRadius;
             const perimeter = 2 * topLen + 2 * rightLen + 4 * cornerLen;
 
             // Generate jagged points along the perimeter
@@ -75,39 +77,39 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
                 let x = 0, y = 0, angle = 0;
 
                 if (dist < topLen) { // Top
-                    x = p + r + dist; y = p; angle = 0;
+                    x = p + adjustedRadius + dist; y = p; angle = 0;
                 } else if (dist < topLen + cornerLen) { // TR
                     const d = dist - topLen;
                     const a = (d / cornerLen) * (Math.PI / 2);
-                    x = w - p - r + Math.sin(a) * r;
-                    y = p + r - Math.cos(a) * r;
+                    x = w - p - adjustedRadius + Math.sin(a) * adjustedRadius;
+                    y = p + adjustedRadius - Math.cos(a) * adjustedRadius;
                     angle = a;
                 } else if (dist < topLen + cornerLen + rightLen) { // Right
                     const d = dist - (topLen + cornerLen);
-                    x = w - p; y = p + r + d; angle = Math.PI / 2;
+                    x = w - p; y = p + adjustedRadius + d; angle = Math.PI / 2;
                 } else if (dist < topLen + cornerLen + rightLen + cornerLen) { // BR
                     const d = dist - (topLen + cornerLen + rightLen);
                     const a = (d / cornerLen) * (Math.PI / 2);
-                    x = w - p - r + Math.cos(a) * r;
-                    y = h - p - r + Math.sin(a) * r;
+                    x = w - p - adjustedRadius + Math.cos(a) * adjustedRadius;
+                    y = h - p - adjustedRadius + Math.sin(a) * adjustedRadius;
                     angle = Math.PI / 2 + a;
                 } else if (dist < topLen + cornerLen + rightLen + cornerLen + topLen) { // Bottom
                     const d = dist - (topLen + cornerLen + rightLen + cornerLen);
-                    x = w - p - r - d; y = h - p; angle = Math.PI;
+                    x = w - p - adjustedRadius - d; y = h - p; angle = Math.PI;
                 } else if (dist < topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen) { // BL
                     const d = dist - (topLen + cornerLen + rightLen + cornerLen + topLen);
                     const a = (d / cornerLen) * (Math.PI / 2);
-                    x = p + r - Math.sin(a) * r;
-                    y = h - p - r + Math.cos(a) * r;
+                    x = p + adjustedRadius - Math.sin(a) * adjustedRadius;
+                    y = h - p - adjustedRadius + Math.cos(a) * adjustedRadius;
                     angle = Math.PI + a;
                 } else if (dist < topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen + rightLen) { // Left
                     const d = dist - (topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen);
-                    x = p; y = h - p - r - d; angle = -Math.PI / 2;
+                    x = p; y = h - p - adjustedRadius - d; angle = -Math.PI / 2;
                 } else { // TL
                     const d = dist - (topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen + rightLen);
                     const a = (d / cornerLen) * (Math.PI / 2);
-                    x = p + r - Math.cos(a) * r;
-                    y = p + r - Math.sin(a) * r;
+                    x = p + adjustedRadius - Math.cos(a) * adjustedRadius;
+                    y = p + adjustedRadius - Math.sin(a) * adjustedRadius;
                     angle = -Math.PI / 2 + a;
                 }
 
@@ -155,39 +157,39 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
 
                 // Calculate position along the path (reuse the same logic as main path)
                 if (randomDist < topLen) {
-                    x = p + r + randomDist; y = p; angle = 0;
+                    x = p + adjustedRadius + randomDist; y = p; angle = 0;
                 } else if (randomDist < topLen + cornerLen) {
                     const d = randomDist - topLen;
                     const a = (d / cornerLen) * (Math.PI / 2);
-                    x = w - p - r + Math.sin(a) * r;
-                    y = p + r - Math.cos(a) * r;
+                    x = w - p - adjustedRadius + Math.sin(a) * adjustedRadius;
+                    y = p + adjustedRadius - Math.cos(a) * adjustedRadius;
                     angle = a;
                 } else if (randomDist < topLen + cornerLen + rightLen) {
                     const d = randomDist - (topLen + cornerLen);
-                    x = w - p; y = p + r + d; angle = Math.PI / 2;
+                    x = w - p; y = p + adjustedRadius + d; angle = Math.PI / 2;
                 } else if (randomDist < topLen + cornerLen + rightLen + cornerLen) {
                     const d = randomDist - (topLen + cornerLen + rightLen);
                     const a = (d / cornerLen) * (Math.PI / 2);
-                    x = w - p - r + Math.cos(a) * r;
-                    y = h - p - r + Math.sin(a) * r;
+                    x = w - p - adjustedRadius + Math.cos(a) * adjustedRadius;
+                    y = h - p - adjustedRadius + Math.sin(a) * adjustedRadius;
                     angle = Math.PI / 2 + a;
                 } else if (randomDist < topLen + cornerLen + rightLen + cornerLen + topLen) {
                     const d = randomDist - (topLen + cornerLen + rightLen + cornerLen);
-                    x = w - p - r - d; y = h - p; angle = Math.PI;
+                    x = w - p - adjustedRadius - d; y = h - p; angle = Math.PI;
                 } else if (randomDist < topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen) {
                     const d = randomDist - (topLen + cornerLen + rightLen + cornerLen + topLen);
                     const a = (d / cornerLen) * (Math.PI / 2);
-                    x = p + r - Math.sin(a) * r;
-                    y = h - p - r + Math.cos(a) * r;
+                    x = p + adjustedRadius - Math.sin(a) * adjustedRadius;
+                    y = h - p - adjustedRadius + Math.cos(a) * adjustedRadius;
                     angle = Math.PI + a;
                 } else if (randomDist < topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen + rightLen) {
                     const d = randomDist - (topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen);
-                    x = p; y = h - p - r - d; angle = -Math.PI / 2;
+                    x = p; y = h - p - adjustedRadius - d; angle = -Math.PI / 2;
                 } else {
                     const d = randomDist - (topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen + rightLen);
                     const a = (d / cornerLen) * (Math.PI / 2);
-                    x = p + r - Math.cos(a) * r;
-                    y = p + r - Math.sin(a) * r;
+                    x = p + adjustedRadius - Math.cos(a) * adjustedRadius;
+                    y = p + adjustedRadius - Math.sin(a) * adjustedRadius;
                     angle = -Math.PI / 2 + a;
                 }
 
