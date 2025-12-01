@@ -22,13 +22,14 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
         let time = 0;
 
         const resize = () => {
-            // Measure the canvas element itself (sized by CSS inset)
-            const rect = canvas.getBoundingClientRect();
+            // Measure the canvas parent (the wrapper div)
+            if (!canvas.parentElement) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
 
+            // Set internal resolution to match display size * dpr
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
-            // Do NOT set style.width/height, let CSS handle layout
 
             ctx.scale(dpr, dpr);
         };
@@ -135,12 +136,14 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
     return (
         <div className={`electric-border-wrapper relative w-full h-full ${className}`}>
             <div ref={containerRef} className="card-container relative">
-                {/* Canvas Overlay for Electric Border */}
-                <canvas
-                    ref={canvasRef}
-                    className="absolute inset-[-4px] pointer-events-none z-30"
-                    style={{ background: 'transparent' }}
-                />
+                {/* Canvas Wrapper - Explicitly sized by CSS inset */}
+                <div className="absolute inset-[-4px] pointer-events-none z-30 animate-pulse">
+                    <canvas
+                        ref={canvasRef}
+                        className="w-full h-full"
+                        style={{ background: 'transparent' }}
+                    />
+                </div>
 
                 <div className="inner-container">
                     {/* Static border fallback/background */}
