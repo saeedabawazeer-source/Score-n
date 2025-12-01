@@ -27,11 +27,13 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
         // child: base: 60, amplitude: 0.8, speed: 0.08
 
         // We use 'lightningLine' as the main border effect
-        const lightning = new NoiseLine(16, { base: 90, amplitude: 0.2, speed: 0.05 });
+        // REDUCED AMPLITUDE (0.2 -> 0.1) for tighter path
+        const lightning = new NoiseLine(16, { base: 90, amplitude: 0.1, speed: 0.05 });
 
         // Create 2 children as per snippet
+        // REDUCED AMPLITUDE (0.8 -> 0.3)
         for (let i = 0; i < 2; i++) {
-            lightning.createChild({ base: 60, amplitude: 0.8, speed: 0.08 });
+            lightning.createChild({ base: 60, amplitude: 0.3, speed: 0.08 });
         }
 
         const resize = () => {
@@ -101,7 +103,7 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
             for (let i = 0; i < points.length; i += points.length - 1) { // Start and end only? Snippet loop is weird: i += len - 1
                 if (i >= points.length) break;
                 const p = points[i];
-                const radius = randomRange(3, 8);
+                const radius = randomRange(2, 5); // Reduced cap radius (3-8 -> 2-5)
                 const gradient = ctx.createRadialGradient(p.x, p.y, radius / 3, p.x, p.y, radius);
                 gradient.addColorStop(0, setAlphaToString(1));
                 gradient.addColorStop(1, setAlphaToString(0));
@@ -141,14 +143,16 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
             // Snippet: drawLightningLine(lightningLine, 0.75, 1, 1, 5);
             // Snippet: drawLightningCap(lightningLine);
 
-            drawLightningBlur(lightning, 50, 30);
-            drawLightningLine(lightning, 0.75, 1, 1, 5);
+            // REDUCED BLUR (50/30 -> 15/8)
+            // REDUCED LINE WIDTH (1/5 -> 0.5/1.5)
+            drawLightningBlur(lightning, 15, 8);
+            drawLightningLine(lightning, 0.75, 1, 0.5, 1.5);
             drawLightningCap(lightning);
 
             // Draw Children
             lightning.children.forEach(child => {
-                drawLightningLine(child, 0, 1, 0, 4);
-                drawLightningBlur(child, 50, 30);
+                drawLightningLine(child, 0, 1, 0.2, 1);
+                drawLightningBlur(child, 10, 5);
             });
 
             animationFrameId = requestAnimationFrame(draw);
