@@ -51,12 +51,12 @@ export const BinaryBorder: React.FC<BinaryBorderProps> = ({ children, className 
             const w = rect.width;
             const h = rect.height;
             const r = 32; // Border radius
-            const borderWidth = 4;
-            const p = -borderWidth / 2; // Offset outward by half border width so stroke only goes OUTSIDE
+            const borderWidth = 3;
+            const p = 0; // Keep path at card edge
 
             ctx.clearRect(0, 0, w, h);
 
-            // Draw Black Background Border (only on outside of card)
+            // Draw Black Background Border
             ctx.beginPath();
             ctx.roundRect(p, p, w - p * 2, h - p * 2, r);
             ctx.lineWidth = borderWidth;
