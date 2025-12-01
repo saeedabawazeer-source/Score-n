@@ -22,17 +22,14 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
         let time = 0;
 
         const resize = () => {
-            const rect = container.getBoundingClientRect();
-            // Handle high DPI displays
+            // Measure the canvas element itself (sized by CSS inset)
+            const rect = canvas.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
-            const padding = 4; // Match inset-[-4px]
-            const width = rect.width + (padding * 2);
-            const height = rect.height + (padding * 2);
 
-            canvas.width = width * dpr;
-            canvas.height = height * dpr;
-            canvas.style.width = `${width}px`;
-            canvas.style.height = `${height}px`;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            // Do NOT set style.width/height, let CSS handle layout
+
             ctx.scale(dpr, dpr);
         };
 
@@ -41,14 +38,15 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
 
         // Resize observer
         const observer = new ResizeObserver(resize);
-        observer.observe(container);
+        observer.observe(canvas); // Observe canvas instead of container
 
         const drawLightning = () => {
             if (!ctx || !canvas) return;
 
-            const width = parseFloat(canvas.style.width);
-            const height = parseFloat(canvas.style.height);
-            const radius = 32; // Match border radius
+            const rect = canvas.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
+            const radius = 36; // 32px (card) + 4px (padding) for concentric corners
 
             ctx.clearRect(0, 0, width, height);
 
@@ -141,7 +139,6 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
                 <canvas
                     ref={canvasRef}
                     className="absolute inset-[-4px] pointer-events-none z-30"
-                    style={{ width: '100%', height: '100%' }}
                 />
 
                 <div className="inner-container">
