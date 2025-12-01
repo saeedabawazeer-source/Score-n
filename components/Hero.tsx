@@ -510,6 +510,49 @@ const CardWrapper: React.FC<{
   );
 };
 
+const PlayerCard: React.FC<{
+  name: string;
+  position: string;
+  level: number;
+  age: number;
+  height: number;
+  foot: string;
+  gms: number;
+  gls: number;
+  ast: number;
+  heatmap: number[];
+  flagIso2: string;
+  imageUrl: string;
+  badges?: PlayerBadge[];
+  positionClass?: string;
+  rotation: number;
+  delay: number;
+  scale: number;
+  transform?: string;
+}> = (props) => {
+  const { positionClass, rotation, delay, scale, transform } = props;
+
+  // Check if this card uses left-1/2 for centering (AMMAR on mobile)
+  const needsCentering = positionClass?.includes('left-1/2');
+
+  // Build transform string with proper responsive scaling
+  const transformString = needsCentering
+    ? `translateX(-50%) ${transform || ''} rotate(${rotation}deg) scale(${scale})`
+    : `${transform || ''} rotate(${rotation}deg) scale(${scale})`;
+
+  const wrapperStyle = {
+    transform: transformString,
+    animation: `float ${4 + delay}s ease-in-out infinite`,
+    animationDelay: `${delay}s`,
+  };
+
+  const responsiveClass = `absolute ${positionClass} opacity-85 hover:opacity-95 transition-all duration-700 pointer-events-none overflow-visible`;
+
+  return (
+    <CardWrapper card={props} responsiveClass={responsiveClass} wrapperStyle={wrapperStyle} />
+  );
+};
+
 export const Hero: React.FC<HeroProps> = ({ onCreateCard }) => {
   const topCards = scatteredCards.slice(0, 3);
   const bottomCards = scatteredCards.slice(3, 5);
@@ -636,12 +679,9 @@ export const Hero: React.FC<HeroProps> = ({ onCreateCard }) => {
       {/* Desktop: Scattered Cards - MOVED TO END for stacking context */}
       <div className="hidden md:block absolute inset-0 pointer-events-none z-0">
         {scatteredCards.map((card, index) => (
-          <CardWrapper
-            key={index}
-            card={card}
-            responsiveClass={`absolute ${card.positionClass} transition-transform duration-700 hover:scale-105 z-0`}
-            wrapperStyle={{}}
-          />
+          <div key={index}>
+            <PlayerCard {...card} />
+          </div>
         ))}
       </div>
 
