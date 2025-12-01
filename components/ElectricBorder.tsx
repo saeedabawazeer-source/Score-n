@@ -21,16 +21,17 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
 
         let animationFrameId: number;
 
-        // Initialize Noise Lines
-        // We use a closed loop for the border
-        // Reduced speed and amplitude for a "thinner, slower" look
-        const lightning = new NoiseLine(8, { base: 60, amplitude: 0.3, speed: 0.02 }); // Main bolt
-        const lightning2 = new NoiseLine(8, { base: 40, amplitude: 0.2, speed: 0.015 }); // Secondary bolt
+        // Initialize Noise Lines with EXACT parameters from snippet
+        // baseLine: base: 10, amplitude: 0.6, speed: 0.02
+        // lightningLine: base: 90, amplitude: 0.2, speed: 0.05
+        // child: base: 60, amplitude: 0.8, speed: 0.08
 
-        // Create branches for the main lightning
-        // These will randomly appear and follow segments of the main bolt
-        for (let i = 0; i < 3; i++) {
-            lightning.createChild({ base: 40, amplitude: 0.5, speed: 0.04 });
+        // We use 'lightningLine' as the main border effect
+        const lightning = new NoiseLine(16, { base: 90, amplitude: 0.2, speed: 0.05 });
+
+        // Create 2 children as per snippet
+        for (let i = 0; i < 2; i++) {
+            lightning.createChild({ base: 60, amplitude: 0.8, speed: 0.08 });
         }
 
         const resize = () => {
@@ -48,80 +49,106 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
         const observer = new ResizeObserver(resize);
         observer.observe(canvas);
 
+        // Color helper from snippet
+        const H = 195;
+        const S = 100;
+        const L_MIN = 45;
+        const L_MAX = 85;
+
+        const setAlphaToString = (alpha?: number) => {
+            const l = Math.random() * (L_MAX - L_MIN) + L_MIN;
+            if (typeof alpha === 'undefined' || alpha === null) {
+                return `hsl(${H}, ${S}%, ${l}%)`;
+            }
+            return `hsla(${H}, ${S}%, ${l}%, ${alpha})`;
+        };
+
+        const randomRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+        const drawLightningLine = (line: NoiseLine, maxAlpha: number, minAlpha: number, maxLineW: number, minLineW: number) => {
+            ctx.beginPath();
+            ctx.strokeStyle = setAlphaToString(randomRange(minAlpha, maxAlpha));
+            ctx.lineWidth = randomRange(minLineW, maxLineW);
+            line.points.forEach((p, i) => {
+                ctx[i === 0 ? 'moveTo' : 'lineTo'](p.x, p.y);
+            });
+            // Close loop for main bolt
+            if (line === lightning && line.points.length > 0) {
+                ctx.lineTo(line.points[0].x, line.points[0].y);
+            }
+            ctx.stroke();
+        };
+
+        const drawLightningBlur = (line: NoiseLine, blur: number, maxSize: number) => {
+            ctx.save();
+            ctx.fillStyle = 'rgba(0, 0, 0, 1)'; // This seems odd in snippet but kept for fidelity, though snippet uses shadowColor for the actual color
+            ctx.shadowBlur = blur;
+            ctx.shadowColor = setAlphaToString();
+            ctx.beginPath();
+            line.points.forEach((p, i) => {
+                // Simplified blur logic from snippet (snippet used distance to neighbors)
+                // We'll just draw circles at points
+                const dist = maxSize; // Simplified
+                ctx.moveTo(p.x + dist, p.y);
+                ctx.arc(p.x, p.y, dist, 0, Math.PI * 2, false);
+            });
+            ctx.fill();
+            ctx.restore();
+        };
+
+        const drawLightningCap = (line: NoiseLine) => {
+            const points = line.points;
+            for (let i = 0; i < points.length; i += points.length - 1) { // Start and end only? Snippet loop is weird: i += len - 1
+                if (i >= points.length) break;
+                const p = points[i];
+                const radius = randomRange(3, 8);
+                const gradient = ctx.createRadialGradient(p.x, p.y, radius / 3, p.x, p.y, radius);
+                gradient.addColorStop(0, setAlphaToString(1));
+                gradient.addColorStop(1, setAlphaToString(0));
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, radius, 0, Math.PI * 2, false);
+                ctx.fill();
+            }
+        };
+
         const draw = () => {
             if (!ctx || !canvas) return;
 
             const rect = canvas.getBoundingClientRect();
             const w = rect.width;
             const h = rect.height;
-
-            // Padding offset to align with the visual card border
-            // Canvas is inset-[-8px], so the card starts at 8px
-            const p = 8;
-            const r = 32; // Card border radius
+            const p = 8; // Padding
+            const r = 32; // Radius
 
             ctx.clearRect(0, 0, w, h);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
 
-            // Define Control Points (The Visual Card Border Path)
-            // We offset by 'p' to ensure lightning runs ON the border, not outside it
+            // Control Points (Visual Border)
             const controls = [
-                new Point(p + r, p),                // Top Left start
-                new Point(w / 2, p),                  // Top Mid
-                new Point(w - p - r, p),            // Top Right end
-                new Point(w - p, p + r),            // Right Top
-                new Point(w - p, h / 2),              // Right Mid
-                new Point(w - p, h - p - r),        // Right Bottom
-                new Point(w - p - r, h - p),        // Bottom Right
-                new Point(w / 2, h - p),              // Bottom Mid
-                new Point(p + r, h - p),            // Bottom Left
-                new Point(p, h - p - r),            // Left Bottom
-                new Point(p, h / 2),                  // Left Mid
-                new Point(p, p + r)                 // Left Top
+                new Point(p + r, p), new Point(w / 2, p), new Point(w - p - r, p),
+                new Point(w - p, p + r), new Point(w - p, h / 2), new Point(w - p, h - p - r),
+                new Point(w - p - r, h - p), new Point(w / 2, h - p), new Point(p + r, h - p),
+                new Point(p, h - p - r), new Point(p, h / 2), new Point(p, p + r)
             ];
 
-            // Update Lightning Logic
-            lightning.update(controls, true); // true = closed loop
-            lightning2.update(controls, true);
+            // Update
+            lightning.update(controls, true);
 
-            // Drawing Helper
-            const drawBolt = (line: NoiseLine, color: string, width: number, blur: number) => {
-                ctx.beginPath();
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.strokeStyle = color;
-                ctx.lineWidth = width;
-                ctx.shadowBlur = blur;
-                ctx.shadowColor = color;
+            // Draw Main Bolt
+            // Snippet: drawLightningBlur(lightningLine, 50, 30);
+            // Snippet: drawLightningLine(lightningLine, 0.75, 1, 1, 5);
+            // Snippet: drawLightningCap(lightningLine);
 
-                if (line.points.length > 0) {
-                    ctx.moveTo(line.points[0].x, line.points[0].y);
-                    for (let i = 1; i < line.points.length; i++) {
-                        ctx.lineTo(line.points[i].x, line.points[i].y);
-                    }
-                    // Close the loop if it's the main bolt (children are open)
-                    if (line === lightning || line === lightning2) {
-                        ctx.lineTo(line.points[0].x, line.points[0].y);
-                    }
-                }
-                ctx.stroke();
-            };
+            drawLightningBlur(lightning, 50, 30);
+            drawLightningLine(lightning, 0.75, 1, 1, 5);
+            drawLightningCap(lightning);
 
-            // Draw Layers (Glow + Core)
-            // Outer Glow - Thinner (6 -> 4)
-            drawBolt(lightning, 'rgba(221, 132, 72, 0.2)', 4, 12);
-
-            // Inner Glow - Thinner (2 -> 1.5)
-            drawBolt(lightning, 'rgba(221, 132, 72, 0.6)', 1.5, 6);
-
-            // White Core - Thinner (1 -> 0.8)
-            drawBolt(lightning, '#ffb380', 0.8, 0);
-
-            // Secondary Bolt (Fainter, faster)
-            drawBolt(lightning2, 'rgba(255, 255, 255, 0.2)', 0.5, 4);
-
-            // Draw Branches
+            // Draw Children
             lightning.children.forEach(child => {
-                drawBolt(child, 'rgba(255, 255, 255, 0.3)', 0.5, 4);
+                drawLightningLine(child, 0, 1, 0, 4);
+                drawLightningBlur(child, 50, 30);
             });
 
             animationFrameId = requestAnimationFrame(draw);

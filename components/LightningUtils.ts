@@ -1,6 +1,6 @@
 
-// Ported and adapted from user-provided JavaScript
-// Implements Point, PerlinNoise, and NoiseLine logic for Lightning effect
+// Strict 1:1 Port of User's Lightning JavaScript
+// Implements Point, PerlinNoise, NoiseLine, NoiseLineChild, and helper functions
 
 export class Point {
     x: number;
@@ -135,12 +135,11 @@ function catmullRom(p0: number, p1: number, p2: number, p3: number, t: number): 
 }
 
 function spline(controls: Point[], segmentsNum: number, closed: boolean = false): Point[] {
-    // Clone controls to avoid modifying original
     const ctrls = controls.map(p => p.clone());
 
     if (closed) {
         ctrls.unshift(ctrls[ctrls.length - 1]);
-        ctrls.push(ctrls[1]); // Wrap around
+        ctrls.push(ctrls[1]);
         ctrls.push(ctrls[2]);
     } else {
         ctrls.unshift(ctrls[0]);
@@ -148,8 +147,6 @@ function spline(controls: Point[], segmentsNum: number, closed: boolean = false)
     }
 
     const points: Point[] = [];
-
-    // For closed loop, we iterate differently
     const len = closed ? ctrls.length - 3 : ctrls.length - 3;
 
     for (let i = 0; i < len; i++) {
@@ -167,9 +164,37 @@ function spline(controls: Point[], segmentsNum: number, closed: boolean = false)
         }
     }
 
-    // Add start point if not closed (or handle closure)
     if (!closed) {
-        points.unshift(ctrls[1]); // Original start
+        points.unshift(ctrls[1]);
+    }
+
+    return points;
+}
+
+function shortest(bases: Point[]): Point[] {
+    if (bases.length === 0) return [];
+    const points = [bases[0]];
+    let i = 0;
+    const len = bases.length;
+
+    while (i < len) {
+        const p = bases[i];
+        let minDist = Infinity;
+        let k = -1;
+
+        for (let j = i + 1; j < len; j++) {
+            const p2 = bases[j];
+            const dist = p.distance(p2);
+            if (dist < minDist) {
+                minDist = dist;
+                k = j;
+            }
+        }
+
+        if (k < 0) break;
+
+        points.push(bases[k]);
+        i = k;
     }
 
     return points;
@@ -201,44 +226,62 @@ export class NoiseLine {
     }
 
     update(controls: Point[], closed: boolean = false) {
-        // Generate spline points from controls
+        // Calculate line length for noise range
+        let lineLength = 0;
+        for (let i = 0; i < controls.length - 1; i++) {
+            lineLength += controls[i].distance(controls[i + 1]);
+        }
+        if (closed) {
+            lineLength += controls[controls.length - 1].distance(controls[0]);
+        }
+
+        // Generate spline points
         const basePoints = spline(controls, this.segmentsNum, closed);
 
         // Apply noise
-        this.applyNoise(basePoints);
+        this.applyNoise(basePoints, lineLength);
+
+        // Shortest path optimization
+        this.points = shortest(this.points);
 
         // Update children
         this.children.forEach(child => child.update());
     }
 
-    protected applyNoise(bases: Point[]) {
+    protected applyNoise(bases: Point[], range: number) {
         this.points = [];
         const opts = this.noiseOptions;
         const base = opts.base;
         const amp = opts.amplitude;
         const speed = opts.speed;
 
-        opts.offset += speed; // Animate offset
+        opts.offset += speed;
 
         const len = bases.length;
 
         for (let i = 0; i < len; i++) {
             const p = bases[i];
-            // For closed loop, next point wraps around
             const next = bases[(i + 1) % len];
 
             const angle = Math.atan2(next.y - p.y, next.x - p.x);
             const sin = Math.sin(angle);
             const cos = Math.cos(angle);
 
-            // Perlin noise based on index and offset
-            const noiseVal = this.perlin.noise2d(i / base - opts.offset, opts.offset);
-            const av = 50 * noiseVal * amp; // 50 is arbitrary range scale
+            // Exact noise logic from snippet
+            const av = range * this.perlin.noise2d(i / base - opts.offset, opts.offset) * 0.5 * amp;
+            const ax = av * sin;
+            const ay = av * cos;
 
-            const px = -Math.sin(angle) * av;
-            const py = Math.cos(angle) * av;
+            const bv = range * this.perlin.noise2d(i / base + opts.offset, opts.offset) * 0.5 * amp;
+            const bx = bv * sin;
+            const by = bv * cos;
 
-            this.points.push(new Point(p.x + px, p.y + py));
+            const m = Math.sin(Math.PI * (i / (len - 1)));
+
+            const px = p.x + (ax - bx) * m;
+            const py = p.y - (ay - by) * m;
+
+            this.points.push(new Point(px, py));
         }
     }
 }
@@ -250,7 +293,7 @@ export class NoiseLineChild extends NoiseLine {
     lastChangeTime: number = 0;
 
     constructor(parent: NoiseLine, noiseOptions: any) {
-        super(0, noiseOptions); // segmentsNum not used directly here
+        super(0, noiseOptions);
         this.parent = parent;
     }
 
@@ -261,20 +304,16 @@ export class NoiseLineChild extends NoiseLine {
 
         const currentTime = Date.now();
 
-        // Randomly change the segment of the parent we follow
-        if (currentTime - this.lastChangeTime > 2000 * Math.random() || plen < this.endStep) {
+        if (currentTime - this.lastChangeTime > 10000 * Math.random() || plen < this.endStep) {
             const stepMin = Math.floor(plen / 10);
-            this.startStep = Math.floor(Math.random() * (plen * 0.6)); // Start in first 60%
-            this.endStep = this.startStep + stepMin + Math.floor(Math.random() * (plen - this.startStep - stepMin) * 0.5);
+            this.startStep = Math.floor(Math.random() * Math.floor(plen / 3 * 2));
+            this.endStep = this.startStep + stepMin + Math.floor(Math.random() * (plen - this.startStep - stepMin) + 1);
             this.lastChangeTime = currentTime;
         }
 
-        // Slice points from parent
-        // Handle wrapping if needed, but for simplicity let's stay within bounds
         const range = parentPoints.slice(this.startStep, this.endStep);
         if (range.length < 2) return;
 
-        // Sub-sample controls from this range to create a new spline
         const sep = 2;
         const seg = (range.length - 1) / sep;
         const controls: Point[] = [];
@@ -283,11 +322,12 @@ export class NoiseLineChild extends NoiseLine {
             if (range[idx]) controls.push(range[idx]);
         }
 
-        // Create spline from these controls
-        // segmentsNum determines resolution of child bolt
-        const basePoints = spline(controls, Math.floor(range.length / 1.5), false);
+        const basePoints = spline(controls, Math.floor(range.length / 3));
 
-        // Apply noise
-        this.applyNoise(basePoints);
+        // Use distance between first and last control point as range
+        const dist = controls[0].distance(controls[controls.length - 1]);
+
+        this.applyNoise(basePoints, dist);
+        this.points = shortest(this.points);
     }
 }
