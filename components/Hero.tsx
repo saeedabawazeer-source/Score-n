@@ -42,26 +42,26 @@ const scatteredCards = [
     ]
   },
   {
-    name: 'AHMAD', // Replaces Hassan or added as new
+    name: 'AHMAD',
     position: 'ST',
-    level: 5, // High level
-    age: 24,
-    height: 182,
+    level: 3,
+    age: 23,
+    height: 179,
     foot: 'R',
-    gms: 65,
-    gls: 42,
-    ast: 15,
+    gms: 47,
+    gls: 23,
+    ast: 12,
     heatmap: [0, 3, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-    flagIso2: 'sa', // Saudi flag
-    imageUrl: '/player-cards/hassan.png', // Using Hassan's image for now as placeholder or if it's the same person
+    flagIso2: 'sa',
+    imageUrl: '/player-cards/hassan.png',
     // Mobile: Top row, left | Desktop: Original
     positionClass: 'top-[2%] left-[1%] md:top-[-22%] md:left-[1%]',
     rotation: 6,
     delay: 0,
     scale: 0.37,
     badges: [
-      { tier: 'S' as BadgeTier, playstyle: 'finisher' as PlaystyleType },
-      { tier: 'A' as BadgeTier, playstyle: 'speed' as PlaystyleType },
+      { tier: 'B' as BadgeTier, playstyle: 'finisher' as PlaystyleType },
+      { tier: 'C' as BadgeTier, playstyle: 'speed' as PlaystyleType },
     ]
   },
   {
