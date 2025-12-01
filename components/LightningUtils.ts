@@ -180,6 +180,7 @@ export class NoiseLine {
     noiseOptions: { base: number, amplitude: number, speed: number, offset: number };
     segmentsNum: number;
     perlin: PerlinNoise;
+    children: NoiseLineChild[] = [];
 
     constructor(segmentsNum: number, noiseOptions: any) {
         this.segmentsNum = segmentsNum;
@@ -193,15 +194,24 @@ export class NoiseLine {
         this.perlin = new PerlinNoise();
     }
 
+    createChild(noiseOptions?: any): NoiseLineChild {
+        const child = new NoiseLineChild(this, noiseOptions || this.noiseOptions);
+        this.children.push(child);
+        return child;
+    }
+
     update(controls: Point[], closed: boolean = false) {
         // Generate spline points from controls
         const basePoints = spline(controls, this.segmentsNum, closed);
 
         // Apply noise
         this.applyNoise(basePoints);
+
+        // Update children
+        this.children.forEach(child => child.update());
     }
 
-    private applyNoise(bases: Point[]) {
+    protected applyNoise(bases: Point[]) {
         this.points = [];
         const opts = this.noiseOptions;
         const base = opts.base;
@@ -225,18 +235,59 @@ export class NoiseLine {
             const noiseVal = this.perlin.noise2d(i / base - opts.offset, opts.offset);
             const av = 50 * noiseVal * amp; // 50 is arbitrary range scale
 
-            const ax = av * sin;
-            const ay = av * cos;
-
-            // Displace perpendicular to the line direction? 
-            // The original code did something complex with two noise values (av, bv) and mixing.
-            // Simplified: Displace perpendicular to tangent.
-
-            // Perpendicular vector (-y, x)
             const px = -Math.sin(angle) * av;
             const py = Math.cos(angle) * av;
 
             this.points.push(new Point(p.x + px, p.y + py));
         }
+    }
+}
+
+export class NoiseLineChild extends NoiseLine {
+    parent: NoiseLine;
+    startStep: number = 0;
+    endStep: number = 0;
+    lastChangeTime: number = 0;
+
+    constructor(parent: NoiseLine, noiseOptions: any) {
+        super(0, noiseOptions); // segmentsNum not used directly here
+        this.parent = parent;
+    }
+
+    update() {
+        const parentPoints = this.parent.points;
+        const plen = parentPoints.length;
+        if (plen === 0) return;
+
+        const currentTime = Date.now();
+
+        // Randomly change the segment of the parent we follow
+        if (currentTime - this.lastChangeTime > 2000 * Math.random() || plen < this.endStep) {
+            const stepMin = Math.floor(plen / 10);
+            this.startStep = Math.floor(Math.random() * (plen * 0.6)); // Start in first 60%
+            this.endStep = this.startStep + stepMin + Math.floor(Math.random() * (plen - this.startStep - stepMin) * 0.5);
+            this.lastChangeTime = currentTime;
+        }
+
+        // Slice points from parent
+        // Handle wrapping if needed, but for simplicity let's stay within bounds
+        const range = parentPoints.slice(this.startStep, this.endStep);
+        if (range.length < 2) return;
+
+        // Sub-sample controls from this range to create a new spline
+        const sep = 2;
+        const seg = (range.length - 1) / sep;
+        const controls: Point[] = [];
+        for (let i = 0; i <= sep; i++) {
+            const idx = Math.floor(seg * i);
+            if (range[idx]) controls.push(range[idx]);
+        }
+
+        // Create spline from these controls
+        // segmentsNum determines resolution of child bolt
+        const basePoints = spline(controls, Math.floor(range.length / 1.5), false);
+
+        // Apply noise
+        this.applyNoise(basePoints);
     }
 }

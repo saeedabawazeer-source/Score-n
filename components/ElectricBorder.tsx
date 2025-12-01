@@ -24,8 +24,14 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
         // Initialize Noise Lines
         // We use a closed loop for the border
         // Reduced speed and amplitude for a "thinner, slower" look
-        const lightning = new NoiseLine(8, { base: 60, amplitude: 0.4, speed: 0.02 }); // Main bolt
-        const lightning2 = new NoiseLine(8, { base: 40, amplitude: 0.3, speed: 0.015 }); // Secondary bolt
+        const lightning = new NoiseLine(8, { base: 60, amplitude: 0.3, speed: 0.02 }); // Main bolt
+        const lightning2 = new NoiseLine(8, { base: 40, amplitude: 0.2, speed: 0.015 }); // Secondary bolt
+
+        // Create branches for the main lightning
+        // These will randomly appear and follow segments of the main bolt
+        for (let i = 0; i < 3; i++) {
+            lightning.createChild({ base: 40, amplitude: 0.5, speed: 0.04 });
+        }
 
         const resize = () => {
             if (!canvas.parentElement) return;
@@ -48,25 +54,29 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
             const rect = canvas.getBoundingClientRect();
             const w = rect.width;
             const h = rect.height;
-            const r = 36; // Radius
+
+            // Padding offset to align with the visual card border
+            // Canvas is inset-[-8px], so the card starts at 8px
+            const p = 8;
+            const r = 32; // Card border radius
 
             ctx.clearRect(0, 0, w, h);
 
-            // Define Control Points (The Rectangle Path)
-            // We add intermediate points to help the spline follow the rounded rectangle shape better
+            // Define Control Points (The Visual Card Border Path)
+            // We offset by 'p' to ensure lightning runs ON the border, not outside it
             const controls = [
-                new Point(r, 0),                // Top Left start
-                new Point(w / 2, 0),              // Top Mid
-                new Point(w - r, 0),            // Top Right end
-                new Point(w, r),                // Right Top
-                new Point(w, h / 2),              // Right Mid
-                new Point(w, h - r),            // Right Bottom
-                new Point(w - r, h),            // Bottom Right
-                new Point(w / 2, h),              // Bottom Mid
-                new Point(r, h),                // Bottom Left
-                new Point(0, h - r),            // Left Bottom
-                new Point(0, h / 2),              // Left Mid
-                new Point(0, r)                 // Left Top
+                new Point(p + r, p),                // Top Left start
+                new Point(w / 2, p),                  // Top Mid
+                new Point(w - p - r, p),            // Top Right end
+                new Point(w - p, p + r),            // Right Top
+                new Point(w - p, h / 2),              // Right Mid
+                new Point(w - p, h - p - r),        // Right Bottom
+                new Point(w - p - r, h - p),        // Bottom Right
+                new Point(w / 2, h - p),              // Bottom Mid
+                new Point(p + r, h - p),            // Bottom Left
+                new Point(p, h - p - r),            // Left Bottom
+                new Point(p, h / 2),                  // Left Mid
+                new Point(p, p + r)                 // Left Top
             ];
 
             // Update Lightning Logic
@@ -88,24 +98,31 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
                     for (let i = 1; i < line.points.length; i++) {
                         ctx.lineTo(line.points[i].x, line.points[i].y);
                     }
-                    // Close the loop
-                    ctx.lineTo(line.points[0].x, line.points[0].y);
+                    // Close the loop if it's the main bolt (children are open)
+                    if (line === lightning || line === lightning2) {
+                        ctx.lineTo(line.points[0].x, line.points[0].y);
+                    }
                 }
                 ctx.stroke();
             };
 
             // Draw Layers (Glow + Core)
-            // Outer Glow - Thinner (12 -> 6)
-            drawBolt(lightning, 'rgba(221, 132, 72, 0.3)', 6, 15);
+            // Outer Glow - Thinner (6 -> 4)
+            drawBolt(lightning, 'rgba(221, 132, 72, 0.2)', 4, 12);
 
-            // Inner Glow - Thinner (4 -> 2)
-            drawBolt(lightning, 'rgba(221, 132, 72, 0.8)', 2, 8);
+            // Inner Glow - Thinner (2 -> 1.5)
+            drawBolt(lightning, 'rgba(221, 132, 72, 0.6)', 1.5, 6);
 
-            // White Core - Thinner (2 -> 1)
-            drawBolt(lightning, '#ffb380', 1, 0);
+            // White Core - Thinner (1 -> 0.8)
+            drawBolt(lightning, '#ffb380', 0.8, 0);
 
             // Secondary Bolt (Fainter, faster)
-            drawBolt(lightning2, 'rgba(255, 255, 255, 0.3)', 0.5, 4);
+            drawBolt(lightning2, 'rgba(255, 255, 255, 0.2)', 0.5, 4);
+
+            // Draw Branches
+            lightning.children.forEach(child => {
+                drawBolt(child, 'rgba(255, 255, 255, 0.3)', 0.5, 4);
+            });
 
             animationFrameId = requestAnimationFrame(draw);
         };
