@@ -241,8 +241,10 @@ export class NoiseLine {
         // Apply noise
         this.applyNoise(basePoints, lineLength);
 
-        // Shortest path optimization
-        this.points = shortest(this.points);
+        // Shortest path optimization is DESTRUCTIVE for closed loops (borders).
+        // It reorders points based on proximity, which scrambles the border path.
+        // We strictly follow the spline order.
+        // this.points = shortest(this.points); 
 
         // Update children
         this.children.forEach(child => child.update());
@@ -328,6 +330,6 @@ export class NoiseLineChild extends NoiseLine {
         const dist = controls[0].distance(controls[controls.length - 1]);
 
         this.applyNoise(basePoints, dist);
-        this.points = shortest(this.points);
+        // this.points = shortest(this.points); // Removed for stability
     }
 }
