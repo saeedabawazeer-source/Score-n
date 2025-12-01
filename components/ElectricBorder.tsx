@@ -7,92 +7,146 @@ interface ElectricBorderProps {
 }
 
 export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, className = '' }) => {
-    const id = React.useId();
-    const filterId = `turbulent-displace-${id.replace(/:/g, '')}`;
-
-    // Refs for the feOffset elements we need to animate
-    const offsetRef1 = React.useRef<SVGFEOffsetElement>(null);
-    const offsetRef2 = React.useRef<SVGFEOffsetElement>(null);
-    const offsetRef3 = React.useRef<SVGFEOffsetElement>(null);
-    const offsetRef4 = React.useRef<SVGFEOffsetElement>(null);
+    const canvasRef = React.useRef<HTMLCanvasElement>(null);
+    const containerRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
-        let frameId: number;
-        const duration = 6000; // 6s duration from original CSS
+        const canvas = canvasRef.current;
+        const container = containerRef.current;
+        if (!canvas || !container) return;
 
-        const animate = (time: number) => {
-            // Calculate progress (0 to 1) based on time
-            const progress = (time % duration) / duration;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
-            // 1. dy: 700 -> 0
-            if (offsetRef1.current) {
-                const val = 700 * (1 - progress);
-                offsetRef1.current.setAttribute('dy', val.toString());
-            }
+        let animationFrameId: number;
+        let time = 0;
 
-            // 2. dy: 0 -> -700
-            if (offsetRef2.current) {
-                const val = -700 * progress;
-                offsetRef2.current.setAttribute('dy', val.toString());
-            }
-
-            // 3. dx: 490 -> 0
-            if (offsetRef3.current) {
-                const val = 490 * (1 - progress);
-                offsetRef3.current.setAttribute('dx', val.toString());
-            }
-
-            // 4. dx: 0 -> -490
-            if (offsetRef4.current) {
-                const val = -490 * progress;
-                offsetRef4.current.setAttribute('dx', val.toString());
-            }
-
-            frameId = requestAnimationFrame(animate);
+        const resize = () => {
+            const rect = container.getBoundingClientRect();
+            // Handle high DPI displays
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            canvas.style.width = `${rect.width}px`;
+            canvas.style.height = `${rect.height}px`;
+            ctx.scale(dpr, dpr);
         };
 
-        frameId = requestAnimationFrame(animate);
-        return () => cancelAnimationFrame(frameId);
+        // Initial resize
+        resize();
+
+        // Resize observer
+        const observer = new ResizeObserver(resize);
+        observer.observe(container);
+
+        const drawLightning = () => {
+            if (!ctx || !canvas) return;
+
+            const width = parseFloat(canvas.style.width);
+            const height = parseFloat(canvas.style.height);
+            const radius = 32; // Match border radius
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Style
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Draw multiple layers for glow effect
+            const layers = [
+                { color: 'rgba(221, 132, 72, 0.2)', width: 8, blur: 10 },
+                { color: 'rgba(221, 132, 72, 0.6)', width: 4, blur: 4 },
+                { color: '#ffb380', width: 2, blur: 0 }
+            ];
+
+            layers.forEach(layer => {
+                ctx.beginPath();
+                ctx.strokeStyle = layer.color;
+                ctx.lineWidth = layer.width;
+                ctx.shadowBlur = layer.blur;
+                ctx.shadowColor = layer.color;
+
+                // Path walking function
+                const step = 5; // Resolution of distortion
+
+                // Noise function: Sum of sines for flowing "electric" look
+                const getNoise = (offset: number) => {
+                    return (
+                        Math.sin(offset * 0.05 + time * 0.002) * 2 +
+                        Math.sin(offset * 0.1 + time * 0.005) * 1 +
+                        Math.random() * 0.5
+                    );
+                };
+
+                // Top Edge
+                for (let x = radius; x <= width - radius; x += step) {
+                    const noise = getNoise(x);
+                    ctx.lineTo(x, 0 + noise);
+                }
+
+                // Top-Right Corner (simplified)
+                ctx.quadraticCurveTo(width + getNoise(width), 0 + getNoise(0), width + getNoise(width), radius + getNoise(radius));
+
+                // Right Edge
+                for (let y = radius; y <= height - radius; y += step) {
+                    const noise = getNoise(y + width); // Offset phase
+                    ctx.lineTo(width + noise, y);
+                }
+
+                // Bottom-Right Corner
+                ctx.quadraticCurveTo(width + getNoise(width), height + getNoise(height), width - radius + getNoise(width), height + getNoise(height));
+
+                // Bottom Edge
+                for (let x = width - radius; x >= radius; x -= step) {
+                    const noise = getNoise(x + width + height);
+                    ctx.lineTo(x, height + noise);
+                }
+
+                // Bottom-Left Corner
+                ctx.quadraticCurveTo(0 + getNoise(0), height + getNoise(height), 0 + getNoise(0), height - radius + getNoise(height));
+
+                // Left Edge
+                for (let y = height - radius; y >= radius; y -= step) {
+                    const noise = getNoise(y + width + height + width);
+                    ctx.lineTo(0 + noise, y);
+                }
+
+                // Top-Left Corner
+                ctx.quadraticCurveTo(0 + getNoise(0), 0 + getNoise(0), radius + getNoise(radius), 0 + getNoise(0));
+
+                ctx.closePath();
+                ctx.stroke();
+            });
+
+            time += 16; // Advance time
+            animationFrameId = requestAnimationFrame(drawLightning);
+        };
+
+        drawLightning();
+
+        return () => {
+            cancelAnimationFrame(animationFrameId);
+            observer.disconnect();
+        };
     }, []);
 
     return (
         <div className={`electric-border-wrapper relative w-full h-full ${className}`}>
-            {/* SVG Filter Definition */}
-            <svg className="absolute w-0 h-0 overflow-hidden" aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
-                <defs>
-                    <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
-                        <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise1" seed="1" />
-                        <feOffset ref={offsetRef1} in="noise1" dx="0" dy="0" result="offsetNoise1" />
+            <div ref={containerRef} className="card-container relative">
+                {/* Canvas Overlay for Electric Border */}
+                <canvas
+                    ref={canvasRef}
+                    className="absolute inset-[-4px] pointer-events-none z-30"
+                    style={{ width: '100%', height: '100%' }}
+                />
 
-                        <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise2" seed="1" />
-                        <feOffset ref={offsetRef2} in="noise2" dx="0" dy="0" result="offsetNoise2" />
-
-                        <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise1" seed="2" />
-                        <feOffset ref={offsetRef3} in="noise1" dx="0" dy="0" result="offsetNoise3" />
-
-                        <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise2" seed="2" />
-                        <feOffset ref={offsetRef4} in="noise2" dx="0" dy="0" result="offsetNoise4" />
-
-                        <feComposite in="offsetNoise1" in2="offsetNoise2" result="part1" />
-                        <feComposite in="offsetNoise3" in2="offsetNoise4" result="part2" />
-                        <feBlend in="part1" in2="part2" mode="color-dodge" result="combinedNoise" />
-
-                        <feDisplacementMap in="SourceGraphic" in2="combinedNoise" scale="30" xChannelSelector="R" yChannelSelector="B" />
-                    </filter>
-                </defs>
-            </svg>
-
-            <div className="card-container">
                 <div className="inner-container">
-                    <div className="border-outer">
-                        <div className="main-card-border" style={{ filter: `url(#${filterId})` }}></div>
-                    </div>
+                    {/* Static border fallback/background */}
+                    <div className="border-outer opacity-50"></div>
                     <div className="glow-layer-1"></div>
-                    <div className="glow-layer-2"></div>
                 </div>
 
                 <div className="overlay-1"></div>
-                <div className="overlay-2"></div>
                 <div className="background-glow"></div>
 
                 <div className="absolute inset-0 z-20">
