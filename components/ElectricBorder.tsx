@@ -43,7 +43,7 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
             const w = rect.width;
             const h = rect.height;
             const r = 32; // Border radius
-            const p = 0; // No padding - trace exact border
+            const p = -1; // Offset outward by 1px so lightning never touches inside card
 
             ctx.clearRect(0, 0, w, h);
 
