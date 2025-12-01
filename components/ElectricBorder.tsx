@@ -64,7 +64,7 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
             const segmentLength = 3; // Pixel distance between points
             const numPoints = Math.floor(perimeter / segmentLength);
 
-            time += 0.5; // Animation speed
+            time += 0.15; // Animation speed (slowed down)
 
             ctx.beginPath();
 

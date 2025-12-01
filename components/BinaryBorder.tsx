@@ -51,14 +51,14 @@ export const BinaryBorder: React.FC<BinaryBorderProps> = ({ children, className 
             const w = rect.width;
             const h = rect.height;
             const r = 32; // Border radius
-            const p = 4; // Padding/Inset
+            const p = 0; // No padding - align with card edge
 
             ctx.clearRect(0, 0, w, h);
 
-            // Draw Black Background Border
+            // Draw Black Background Border (thinner to avoid covering content)
             ctx.beginPath();
             ctx.roundRect(p, p, w - p * 2, h - p * 2, r);
-            ctx.lineWidth = 24; // Thick black border
+            ctx.lineWidth = 4; // Thin border - just for edge definition
             ctx.strokeStyle = '#000000';
             ctx.stroke();
 
