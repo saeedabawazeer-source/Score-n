@@ -43,7 +43,7 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
             const w = rect.width;
             const h = rect.height;
             const r = 32; // Border radius
-            const p = 4; // Padding/Inset (Tight to card)
+            const p = 0; // No padding - trace exact border
 
             ctx.clearRect(0, 0, w, h);
 

@@ -176,7 +176,7 @@ export const BinaryBorder: React.FC<BinaryBorderProps> = ({ children, className 
                         style={{ background: 'transparent' }}
                     />
                 </div>
-                <div className="absolute inset-0 z-20 overflow-visible">
+                <div className="absolute inset-0 z-20">
                     {children}
                 </div>
             </div>
