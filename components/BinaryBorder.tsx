@@ -175,8 +175,8 @@ export const BinaryBorder: React.FC<BinaryBorderProps> = ({ children, className 
     return (
         <div className={`relative w-full h-full ${className}`}>
             <div ref={containerRef} className="relative w-full h-full">
-                {/* Canvas Wrapper */}
-                <div className="absolute inset-[-4px] pointer-events-none z-30">
+                {/* Canvas Wrapper - Inside the 3px black border */}
+                <div className="absolute inset-[3px] pointer-events-none z-30">
                     <canvas
                         ref={canvasRef}
                         className="w-full h-full"
