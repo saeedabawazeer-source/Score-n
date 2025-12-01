@@ -21,7 +21,7 @@ export const BinaryBorder: React.FC<BinaryBorderProps> = ({ children, className 
 
         // Binary Stream Logic
         const characters = "01";
-        const fontSize = 14;
+        const fontSize = 6; // Much smaller font for visibility
         const speed = 1; // Pixels per frame
 
         // We'll treat the border as a single continuous path

@@ -145,6 +145,76 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
             ctx.shadowBlur = 4;
             ctx.stroke();
 
+            // Add Lightning Branches for realistic effect
+            // Randomly create small branch strokes that fork out from the main path
+            const numBranches = 8; // Number of branch strokes
+            for (let b = 0; b < numBranches; b++) {
+                // Pick a random point on the perimeter
+                const randomDist = Math.random() * perimeter;
+                let x = 0, y = 0, angle = 0;
+
+                // Calculate position along the path (reuse the same logic as main path)
+                if (randomDist < topLen) {
+                    x = p + r + randomDist; y = p; angle = 0;
+                } else if (randomDist < topLen + cornerLen) {
+                    const d = randomDist - topLen;
+                    const a = (d / cornerLen) * (Math.PI / 2);
+                    x = w - p - r + Math.sin(a) * r;
+                    y = p + r - Math.cos(a) * r;
+                    angle = a;
+                } else if (randomDist < topLen + cornerLen + rightLen) {
+                    const d = randomDist - (topLen + cornerLen);
+                    x = w - p; y = p + r + d; angle = Math.PI / 2;
+                } else if (randomDist < topLen + cornerLen + rightLen + cornerLen) {
+                    const d = randomDist - (topLen + cornerLen + rightLen);
+                    const a = (d / cornerLen) * (Math.PI / 2);
+                    x = w - p - r + Math.cos(a) * r;
+                    y = h - p - r + Math.sin(a) * r;
+                    angle = Math.PI / 2 + a;
+                } else if (randomDist < topLen + cornerLen + rightLen + cornerLen + topLen) {
+                    const d = randomDist - (topLen + cornerLen + rightLen + cornerLen);
+                    x = w - p - r - d; y = h - p; angle = Math.PI;
+                } else if (randomDist < topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen) {
+                    const d = randomDist - (topLen + cornerLen + rightLen + cornerLen + topLen);
+                    const a = (d / cornerLen) * (Math.PI / 2);
+                    x = p + r - Math.sin(a) * r;
+                    y = h - p - r + Math.cos(a) * r;
+                    angle = Math.PI + a;
+                } else if (randomDist < topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen + rightLen) {
+                    const d = randomDist - (topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen);
+                    x = p; y = h - p - r - d; angle = -Math.PI / 2;
+                } else {
+                    const d = randomDist - (topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen + rightLen);
+                    const a = (d / cornerLen) * (Math.PI / 2);
+                    x = p + r - Math.cos(a) * r;
+                    y = p + r - Math.sin(a) * r;
+                    angle = -Math.PI / 2 + a;
+                }
+
+                // Draw a small branch stroke perpendicular to the path
+                const branchLength = 6 + Math.random() * 8; // 6-14px branch
+                const branchAngle = angle + Math.PI / 2 + (Math.random() - 0.5) * 0.5; // Slightly randomize direction
+
+                const endX = x + Math.cos(branchAngle) * branchLength;
+                const endY = y + Math.sin(branchAngle) * branchLength;
+
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(endX, endY);
+
+                // Draw branch with glow
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 0.5;
+                ctx.shadowBlur = 0;
+                ctx.stroke();
+
+                ctx.strokeStyle = 'rgba(0, 191, 255, 0.6)';
+                ctx.lineWidth = 1;
+                ctx.shadowColor = 'rgba(0, 191, 255, 0.6)';
+                ctx.shadowBlur = 3;
+                ctx.stroke();
+            }
+
             animationFrameId = requestAnimationFrame(draw);
         };
 
