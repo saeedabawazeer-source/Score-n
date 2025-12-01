@@ -139,6 +139,7 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
                 <canvas
                     ref={canvasRef}
                     className="absolute inset-[-4px] pointer-events-none z-30"
+                    style={{ background: 'transparent' }}
                 />
 
                 <div className="inner-container">
@@ -147,7 +148,7 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
                     <div className="glow-layer-1"></div>
                 </div>
 
-                <div className="overlay-1"></div>
+                {/* Removed overlay-1 to prevent white artifacts */}
                 <div className="background-glow"></div>
 
                 <div className="absolute inset-0 z-20">
