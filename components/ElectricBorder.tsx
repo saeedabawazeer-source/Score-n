@@ -8,7 +8,7 @@ interface ElectricBorderProps {
 
 export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, className = '' }) => {
     return (
-        <div className={`electric-border-wrapper relative ${className}`}>
+        <div className={`electric-border-wrapper relative w-full h-full ${className}`}>
             {/* 
                 Electric Lightning Animation 
                 - Uses a tiled SVG background pattern for lightweight, mobile-safe animation.
