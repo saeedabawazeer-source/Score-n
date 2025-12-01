@@ -191,10 +191,11 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
                     angle = -Math.PI / 2 + a;
                 }
 
-                // Draw a small branch stroke perpendicular to the path
+                // Draw a small branch stroke OUTWARD from the card (perpendicular away from center)
                 const branchLength = 6 + Math.random() * 8; // 6-14px branch
-                const branchAngle = angle + Math.PI / 2 + (Math.random() - 0.5) * 0.5; // Slightly randomize direction
-
+                // For outward direction: add PI/2 and ensure it points away from card center
+                const outwardAngle = angle - Math.PI / 2; // Perpendicular OUTWARD
+                const branchAngle = outwardAngle + (Math.random() - 0.5) * 0.3; // Slightly randomize direction
                 const endX = x + Math.cos(branchAngle) * branchLength;
                 const endY = y + Math.sin(branchAngle) * branchLength;
 

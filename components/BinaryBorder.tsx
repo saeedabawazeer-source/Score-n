@@ -147,9 +147,15 @@ export const BinaryBorder: React.FC<BinaryBorderProps> = ({ children, className 
                 // Randomly flip bits occasionally
                 const char = Math.random() > 0.95 ? (Math.random() > 0.5 ? "1" : "0") : (i % 2 === 0 ? "1" : "0");
 
-                // Draw character
+                // Calculate outward offset for text visibility
+                // Offset text 8px outward from the border path (perpendicular to angle)
+                const textOffset = 8;
+                const offsetX = x + Math.cos(angle - Math.PI / 2) * textOffset;
+                const offsetY = y + Math.sin(angle - Math.PI / 2) * textOffset;
+
+                // Draw character at offset position
                 ctx.save();
-                ctx.translate(x, y);
+                ctx.translate(offsetX, offsetY);
                 // ctx.rotate(angle); // Optional: Rotate text to follow path
                 ctx.fillText(char, 0, 0);
                 ctx.restore();
