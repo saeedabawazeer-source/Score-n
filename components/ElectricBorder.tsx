@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { NoiseLine, Point } from './LightningUtils';
 import './ElectricBorder.css';
 
 interface ElectricBorderProps {
@@ -20,21 +19,7 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
         if (!ctx) return;
 
         let animationFrameId: number;
-
-        // Initialize Noise Lines with EXACT parameters from snippet
-        // baseLine: base: 10, amplitude: 0.6, speed: 0.02
-        // lightningLine: base: 90, amplitude: 0.2, speed: 0.05
-        // child: base: 60, amplitude: 0.8, speed: 0.08
-
-        // We use 'lightningLine' as the main border effect
-        // REDUCED AMPLITUDE (0.2 -> 0.1) for tighter path
-        const lightning = new NoiseLine(16, { base: 90, amplitude: 0.1, speed: 0.05 });
-
-        // Create 2 children as per snippet
-        // REDUCED AMPLITUDE (0.8 -> 0.3)
-        for (let i = 0; i < 2; i++) {
-            lightning.createChild({ base: 60, amplitude: 0.3, speed: 0.08 });
-        }
+        let time = 0;
 
         const resize = () => {
             if (!canvas.parentElement) return;
@@ -51,109 +36,114 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
         const observer = new ResizeObserver(resize);
         observer.observe(canvas);
 
-        // Color helper from snippet
-        const H = 195;
-        const S = 100;
-        const L_MIN = 45;
-        const L_MAX = 85;
-
-        const setAlphaToString = (alpha?: number) => {
-            const l = Math.random() * (L_MAX - L_MIN) + L_MIN;
-            if (typeof alpha === 'undefined' || alpha === null) {
-                return `hsl(${H}, ${S}%, ${l}%)`;
-            }
-            return `hsla(${H}, ${S}%, ${l}%, ${alpha})`;
-        };
-
-        const randomRange = (min: number, max: number) => Math.random() * (max - min) + min;
-
-        const drawLightningLine = (line: NoiseLine, maxAlpha: number, minAlpha: number, maxLineW: number, minLineW: number) => {
-            ctx.beginPath();
-            ctx.strokeStyle = setAlphaToString(randomRange(minAlpha, maxAlpha));
-            ctx.lineWidth = randomRange(minLineW, maxLineW);
-            line.points.forEach((p, i) => {
-                ctx[i === 0 ? 'moveTo' : 'lineTo'](p.x, p.y);
-            });
-            // Close loop for main bolt
-            if (line === lightning && line.points.length > 0) {
-                ctx.lineTo(line.points[0].x, line.points[0].y);
-            }
-            ctx.stroke();
-        };
-
-        const drawLightningBlur = (line: NoiseLine, blur: number, maxSize: number) => {
-            ctx.save();
-            ctx.fillStyle = 'rgba(0, 0, 0, 1)'; // This seems odd in snippet but kept for fidelity, though snippet uses shadowColor for the actual color
-            ctx.shadowBlur = blur;
-            ctx.shadowColor = setAlphaToString();
-            ctx.beginPath();
-            line.points.forEach((p, i) => {
-                // Simplified blur logic from snippet (snippet used distance to neighbors)
-                // We'll just draw circles at points
-                const dist = maxSize; // Simplified
-                ctx.moveTo(p.x + dist, p.y);
-                ctx.arc(p.x, p.y, dist, 0, Math.PI * 2, false);
-            });
-            ctx.fill();
-            ctx.restore();
-        };
-
-        const drawLightningCap = (line: NoiseLine) => {
-            const points = line.points;
-            for (let i = 0; i < points.length; i += points.length - 1) { // Start and end only? Snippet loop is weird: i += len - 1
-                if (i >= points.length) break;
-                const p = points[i];
-                const radius = randomRange(2, 5); // Reduced cap radius (3-8 -> 2-5)
-                const gradient = ctx.createRadialGradient(p.x, p.y, radius / 3, p.x, p.y, radius);
-                gradient.addColorStop(0, setAlphaToString(1));
-                gradient.addColorStop(1, setAlphaToString(0));
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, radius, 0, Math.PI * 2, false);
-                ctx.fill();
-            }
-        };
-
         const draw = () => {
             if (!ctx || !canvas) return;
 
             const rect = canvas.getBoundingClientRect();
             const w = rect.width;
             const h = rect.height;
-            const p = 8; // Padding
-            const r = 32; // Radius
+            const r = 32; // Border radius
+            const p = 4; // Padding/Inset (Tight to card)
 
             ctx.clearRect(0, 0, w, h);
+
+            // Draw Base Path (The "Wire")
+            // We want the lightning to be EXACTLY on this path, with minimal deviation
+
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
 
-            // Control Points (Visual Border)
-            const controls = [
-                new Point(p + r, p), new Point(w / 2, p), new Point(w - p - r, p),
-                new Point(w - p, p + r), new Point(w - p, h / 2), new Point(w - p, h - p - r),
-                new Point(w - p - r, h - p), new Point(w / 2, h - p), new Point(p + r, h - p),
-                new Point(p, h - p - r), new Point(p, h / 2), new Point(p, p + r)
-            ];
+            // Path segments
+            const topLen = w - p * 2 - 2 * r;
+            const rightLen = h - p * 2 - 2 * r;
+            const cornerLen = 0.5 * Math.PI * r;
+            const perimeter = 2 * topLen + 2 * rightLen + 4 * cornerLen;
 
-            // Update
-            lightning.update(controls, true);
+            // Generate jagged points along the perimeter
+            const points: { x: number, y: number }[] = [];
+            const segmentLength = 3; // Pixel distance between points
+            const numPoints = Math.floor(perimeter / segmentLength);
 
-            // Draw Main Bolt
-            // Snippet: drawLightningBlur(lightningLine, 50, 30);
-            // Snippet: drawLightningLine(lightningLine, 0.75, 1, 1, 5);
-            // Snippet: drawLightningCap(lightningLine);
+            time += 0.5; // Animation speed
 
-            // REDUCED BLUR (50/30 -> 15/8)
-            // REDUCED LINE WIDTH (1/5 -> 0.5/1.5)
-            drawLightningBlur(lightning, 15, 8);
-            drawLightningLine(lightning, 0.75, 1, 0.5, 1.5);
-            drawLightningCap(lightning);
+            ctx.beginPath();
 
-            // Draw Children
-            lightning.children.forEach(child => {
-                drawLightningLine(child, 0, 1, 0.2, 1);
-                drawLightningBlur(child, 10, 5);
-            });
+            for (let i = 0; i <= numPoints; i++) {
+                const dist = (i * segmentLength);
+
+                // Map distance to x, y, angle
+                let x = 0, y = 0, angle = 0;
+
+                if (dist < topLen) { // Top
+                    x = p + r + dist; y = p; angle = 0;
+                } else if (dist < topLen + cornerLen) { // TR
+                    const d = dist - topLen;
+                    const a = (d / cornerLen) * (Math.PI / 2);
+                    x = w - p - r + Math.sin(a) * r;
+                    y = p + r - Math.cos(a) * r;
+                    angle = a;
+                } else if (dist < topLen + cornerLen + rightLen) { // Right
+                    const d = dist - (topLen + cornerLen);
+                    x = w - p; y = p + r + d; angle = Math.PI / 2;
+                } else if (dist < topLen + cornerLen + rightLen + cornerLen) { // BR
+                    const d = dist - (topLen + cornerLen + rightLen);
+                    const a = (d / cornerLen) * (Math.PI / 2);
+                    x = w - p - r + Math.cos(a) * r;
+                    y = h - p - r + Math.sin(a) * r;
+                    angle = Math.PI / 2 + a;
+                } else if (dist < topLen + cornerLen + rightLen + cornerLen + topLen) { // Bottom
+                    const d = dist - (topLen + cornerLen + rightLen + cornerLen);
+                    x = w - p - r - d; y = h - p; angle = Math.PI;
+                } else if (dist < topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen) { // BL
+                    const d = dist - (topLen + cornerLen + rightLen + cornerLen + topLen);
+                    const a = (d / cornerLen) * (Math.PI / 2);
+                    x = p + r - Math.sin(a) * r;
+                    y = h - p - r + Math.cos(a) * r;
+                    angle = Math.PI + a;
+                } else if (dist < topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen + rightLen) { // Left
+                    const d = dist - (topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen);
+                    x = p; y = h - p - r - d; angle = -Math.PI / 2;
+                } else { // TL
+                    const d = dist - (topLen + cornerLen + rightLen + cornerLen + topLen + cornerLen + rightLen);
+                    const a = (d / cornerLen) * (Math.PI / 2);
+                    x = p + r - Math.cos(a) * r;
+                    y = p + r - Math.sin(a) * r;
+                    angle = -Math.PI / 2 + a;
+                }
+
+                // Jitter Logic - STRICTLY CONSTRAINED
+                // Perpendicular displacement
+                // Use sine waves + random for "electric" look but kept tight
+                const jitter = (Math.sin(i * 0.5 + time) * Math.cos(i * 0.2 - time * 2)) * 1.5; // Max 1.5px deviation
+
+                // Perpendicular vector (-sin, cos) relative to angle? No, angle is tangent.
+                // Tangent is (cos(a), sin(a)). Normal is (-sin(a), cos(a)).
+
+                const nx = -Math.sin(angle);
+                const ny = Math.cos(angle);
+
+                const px = x + nx * jitter;
+                const py = y + ny * jitter;
+
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+
+            ctx.closePath();
+
+            // Render - Single tight pass
+            // Core
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1;
+            ctx.shadowBlur = 0;
+            ctx.stroke();
+
+            // Glow - Very tight
+            ctx.strokeStyle = 'rgba(0, 191, 255, 0.8)'; // Deep Sky Blue
+            ctx.lineWidth = 2;
+            ctx.shadowColor = 'rgba(0, 191, 255, 0.8)';
+            ctx.shadowBlur = 4;
+            ctx.stroke();
 
             animationFrameId = requestAnimationFrame(draw);
         };
@@ -169,20 +159,14 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
     return (
         <div className={`electric-border-wrapper relative w-full h-full ${className}`}>
             <div ref={containerRef} className="card-container relative w-full h-full">
-                {/* Canvas Wrapper - Explicitly sized by CSS inset */}
-                <div className="absolute inset-[-8px] pointer-events-none z-30">
+                {/* Canvas Wrapper - Tight fit */}
+                <div className="absolute inset-[-4px] pointer-events-none z-30">
                     <canvas
                         ref={canvasRef}
                         className="w-full h-full"
                         style={{ background: 'transparent' }}
                     />
                 </div>
-
-                <div className="inner-container">
-                    {/* Static border fallback/background */}
-                    <div className="border-outer opacity-30"></div>
-                </div>
-
                 <div className="absolute inset-0 z-20 overflow-visible">
                     {children}
                 </div>

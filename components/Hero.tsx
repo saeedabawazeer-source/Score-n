@@ -11,6 +11,10 @@ interface PlayerBadge {
   playstyle: PlaystyleType;
 }
 
+import { BinaryBorder } from './BinaryBorder';
+
+// ... (existing imports)
+
 // Sample player cards data - positioned to clear center text on mobile
 const scatteredCards = [
   {
@@ -38,26 +42,26 @@ const scatteredCards = [
     ]
   },
   {
-    name: 'HASSAN',
+    name: 'AHMAD', // Replaces Hassan or added as new
     position: 'ST',
-    level: 3,
-    age: 23,
-    height: 179,
+    level: 5, // High level
+    age: 24,
+    height: 182,
     foot: 'R',
-    gms: 47,
-    gls: 23,
-    ast: 12,
+    gms: 65,
+    gls: 42,
+    ast: 15,
     heatmap: [0, 3, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-    flagIso2: 'sa',
-    imageUrl: '/player-cards/hassan.png',
+    flagIso2: 'sa', // Saudi flag
+    imageUrl: '/player-cards/hassan.png', // Using Hassan's image for now as placeholder or if it's the same person
     // Mobile: Top row, left | Desktop: Original
     positionClass: 'top-[2%] left-[1%] md:top-[-22%] md:left-[1%]',
     rotation: 6,
     delay: 0,
     scale: 0.37,
     badges: [
-      { tier: 'B' as BadgeTier, playstyle: 'finisher' as PlaystyleType },
-      { tier: 'C' as BadgeTier, playstyle: 'speed' as PlaystyleType },
+      { tier: 'S' as BadgeTier, playstyle: 'finisher' as PlaystyleType },
+      { tier: 'A' as BadgeTier, playstyle: 'speed' as PlaystyleType },
     ]
   },
   {
@@ -131,6 +135,10 @@ const scatteredCards = [
     ]
   },
 ];
+
+// ... (CardContent component)
+
+
 
 import { ElectricBorder } from './ElectricBorder';
 import { FreezeBorder } from './FreezeBorder';
@@ -413,59 +421,36 @@ const CardContent: React.FC<{
   );
 };
 
-const PlayerCard: React.FC<{
-  // ... props
-  name: string;
-  position: string;
-  level: number;
-  age: number;
-  height: number;
-  foot: string;
-  gms: number;
-  gls: number;
-  ast: number;
-  heatmap: number[];
-  flagIso2: string;
-  imageUrl: string;
-  badges?: PlayerBadge[];
-  positionClass?: string; // New prop for responsive positioning
-  rotation: number;
-  delay: number;
-  scale: number;
-  transform?: string;
-}> = (props) => {
-  const { name, positionClass, rotation, delay, scale, transform } = props;
-
-  // Check if this card uses left-1/2 for centering (WILLIAM on mobile)
-  const needsCentering = positionClass?.includes('left-1/2');
-
-  // Build transform string with proper responsive scaling
-  // Mobile: scale to 0.35, Desktop: use original scale
-  const transformString = needsCentering
-    ? `translateX(-50%) ${transform || ''} rotate(${rotation}deg) scale(${scale})`
-    : `${transform || ''} rotate(${rotation}deg) scale(${scale})`;
-
-  const wrapperStyle = {
-    // Removed inline top/left/right/bottom - now using Tailwind positionClass
-    transform: transformString,
-    animation: `float ${4 + delay}s ease-in-out infinite`,
-    animationDelay: `${delay}s`,
-  };
-
-  // Responsive class: Use Tailwind for positioning, add scale override for mobile via style
-  const responsiveClass = `absolute ${positionClass} opacity-85 hover:opacity-95 transition-all duration-700 pointer-events-none overflow-visible`;
+// Wrapper component to handle different border styles based on player name
+const CardWrapper: React.FC<{
+  card: typeof scatteredCards[0];
+  responsiveClass: string;
+  wrapperStyle: React.CSSProperties;
+}> = ({ card, responsiveClass, wrapperStyle }) => {
+  const { name } = card;
 
   if (name === 'AMMAR') {
     return (
-      <div
-        className={responsiveClass}
-        style={wrapperStyle}
-      >
+      <div className={responsiveClass} style={wrapperStyle}>
         <div className="scale-[0.35] md:scale-100 origin-center transition-transform duration-500">
           <div className="w-[340px] h-[540px] overflow-visible">
             <ElectricBorder>
-              <CardContent {...props} />
+              <CardContent {...card} />
             </ElectricBorder>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (name === 'AHMAD') {
+    return (
+      <div className={responsiveClass} style={wrapperStyle}>
+        <div className="scale-[0.35] md:scale-100 origin-center transition-transform duration-500">
+          <div className="w-[340px] h-[540px] overflow-visible">
+            <BinaryBorder>
+              <CardContent {...card} />
+            </BinaryBorder>
           </div>
         </div>
       </div>
@@ -474,14 +459,11 @@ const PlayerCard: React.FC<{
 
   if (name === 'JULIAN') {
     return (
-      <div
-        className={responsiveClass}
-        style={wrapperStyle}
-      >
+      <div className={responsiveClass} style={wrapperStyle}>
         <div className="scale-[0.35] md:scale-100 origin-center transition-transform duration-500">
           <div className="w-[340px] h-[540px] overflow-visible">
             <FreezeBorder>
-              <CardContent {...props} />
+              <CardContent {...card} />
             </FreezeBorder>
           </div>
         </div>
@@ -491,14 +473,11 @@ const PlayerCard: React.FC<{
 
   if (name === 'RODRI') {
     return (
-      <div
-        className={responsiveClass}
-        style={wrapperStyle}
-      >
+      <div className={responsiveClass} style={wrapperStyle}>
         <div className="scale-[0.35] md:scale-100 origin-center transition-transform duration-500">
           <div className="w-[340px] h-[540px] overflow-visible">
             <AmbientGlowBorder>
-              <CardContent {...props} />
+              <CardContent {...card} />
             </AmbientGlowBorder>
           </div>
         </div>
@@ -508,14 +487,11 @@ const PlayerCard: React.FC<{
 
   if (name === 'WILLIAM') {
     return (
-      <div
-        className={responsiveClass}
-        style={wrapperStyle}
-      >
+      <div className={responsiveClass} style={wrapperStyle}>
         <div className="scale-[0.35] md:scale-100 origin-center transition-transform duration-500">
           <div className="w-[340px] h-[540px] overflow-visible">
             <AmbientGlowBorder color1="#FFD700" color2="#CD7F32">
-              <CardContent {...props} />
+              <CardContent {...card} />
             </AmbientGlowBorder>
           </div>
         </div>
@@ -524,13 +500,10 @@ const PlayerCard: React.FC<{
   }
 
   return (
-    <div
-      className={responsiveClass}
-      style={wrapperStyle}
-    >
+    <div className={responsiveClass} style={wrapperStyle}>
       <div className="scale-[0.35] md:scale-100 origin-center transition-transform duration-500">
         <div className="relative w-[340px] h-[540px] rounded-[32px] p-[2px] bg-gradient-to-b from-[#333] via-[#222] to-lime/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-visible">
-          <CardContent {...props} />
+          <CardContent {...card} />
         </div>
       </div>
     </div>
@@ -564,31 +537,18 @@ export const Hero: React.FC<HeroProps> = ({ onCreateCard }) => {
             const pos = positions[index];
 
             return (
-              <div
+              <CardWrapper
                 key={index}
-                className="absolute transition-transform duration-500 hover:scale-105 z-[60]"
-                style={{
+                card={card}
+                responsiveClass="absolute transition-transform duration-500 hover:scale-105 z-[60]"
+                wrapperStyle={{
                   left: pos.left,
                   top: pos.top,
                   transform: `rotate(${pos.rotation}deg) scale(${pos.scale})`,
                   transformOrigin: 'top left',
                   zIndex: 60
                 }}
-              >
-                <div className="w-[340px] h-[540px]">
-                  {card.name === 'AMMAR' ? (
-                    <ElectricBorder><CardContent {...card} /></ElectricBorder>
-                  ) : card.name === 'RODRI' ? (
-                    <AmbientGlowBorder><CardContent {...card} /></AmbientGlowBorder>
-                  ) : card.name === 'WILLIAM' ? (
-                    <AmbientGlowBorder color1="#FFD700" color2="#CD7F32"><CardContent {...card} /></AmbientGlowBorder>
-                  ) : (
-                    <div className="relative w-full h-full rounded-[32px] p-[2px] bg-gradient-to-b from-[#333] via-[#222] to-lime/20 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-                      <CardContent {...card} />
-                    </div>
-                  )}
-                </div>
-              </div>
+              />
             );
           })}
         </div>
@@ -655,31 +615,18 @@ export const Hero: React.FC<HeroProps> = ({ onCreateCard }) => {
             const pos = positions[index];
 
             return (
-              <div
+              <CardWrapper
                 key={index}
-                className="absolute transition-transform duration-500 hover:scale-105 z-50"
-                style={{
+                card={card}
+                responsiveClass="absolute transition-transform duration-500 hover:scale-105 z-50"
+                wrapperStyle={{
                   left: pos.left,
                   top: pos.top,
                   transform: `rotate(${pos.rotation}deg) scale(${pos.scale})`,
                   transformOrigin: 'top left',
                   zIndex: 50
                 }}
-              >
-                <div className="w-[340px] h-[540px]">
-                  {card.name === 'AMMAR' ? (
-                    <ElectricBorder><CardContent {...card} /></ElectricBorder>
-                  ) : card.name === 'RODRI' ? (
-                    <AmbientGlowBorder><CardContent {...card} /></AmbientGlowBorder>
-                  ) : card.name === 'WILLIAM' ? (
-                    <AmbientGlowBorder color1="#FFD700" color2="#CD7F32"><CardContent {...card} /></AmbientGlowBorder>
-                  ) : (
-                    <div className="relative w-full h-full rounded-[32px] p-[2px] bg-gradient-to-b from-[#333] via-[#222] to-lime/20 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-                      <CardContent {...card} />
-                    </div>
-                  )}
-                </div>
-              </div>
+              />
             );
           })}
         </div>
@@ -689,9 +636,12 @@ export const Hero: React.FC<HeroProps> = ({ onCreateCard }) => {
       {/* Desktop: Scattered Cards - MOVED TO END for stacking context */}
       <div className="hidden md:block absolute inset-0 pointer-events-none z-0">
         {scatteredCards.map((card, index) => (
-          <div key={index} className={`absolute ${card.positionClass} transition-transform duration-700 hover:scale-105 z-0`}>
-            <PlayerCard {...card} />
-          </div>
+          <CardWrapper
+            key={index}
+            card={card}
+            responsiveClass={`absolute ${card.positionClass} transition-transform duration-700 hover:scale-105 z-0`}
+            wrapperStyle={{}}
+          />
         ))}
       </div>
 
@@ -760,6 +710,7 @@ export const Hero: React.FC<HeroProps> = ({ onCreateCard }) => {
           ))}
         </div>
       </div>
+
     </section>
   );
 };
