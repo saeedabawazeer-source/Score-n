@@ -25,10 +25,14 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({ children, classN
             const rect = container.getBoundingClientRect();
             // Handle high DPI displays
             const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            canvas.style.width = `${rect.width}px`;
-            canvas.style.height = `${rect.height}px`;
+            const padding = 4; // Match inset-[-4px]
+            const width = rect.width + (padding * 2);
+            const height = rect.height + (padding * 2);
+
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
             ctx.scale(dpr, dpr);
         };
 
