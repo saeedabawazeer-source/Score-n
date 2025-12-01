@@ -307,7 +307,13 @@ const CardContent: React.FC<{
         </div>
       )}
 
-      <div className="w-full h-full bg-[#0a0a0a] flex flex-col relative rounded-[30px] overflow-hidden">
+      <div
+        className="w-full h-full bg-[#0a0a0a] flex flex-col relative rounded-[30px] overflow-hidden"
+        style={{
+          border: '3px solid #000000',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 1px 2px rgba(0,0,0,0.8)'
+        }}
+      >
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.02)_25%,rgba(255,255,255,0.02)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.02)_75%,rgba(255,255,255,0.02)_100%)] bg-[length:20px_20px] pointer-events-none"></div>
         <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
