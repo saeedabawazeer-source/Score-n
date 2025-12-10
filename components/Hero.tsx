@@ -140,8 +140,7 @@ const scatteredCards = [
 
 
 
-import { ElectricBorder } from './ElectricBorder';
-import { FreezeBorder } from './FreezeBorder';
+
 import { AmbientGlowBorder } from './AmbientGlowBorder';
 
 const CardContent: React.FC<{
@@ -440,9 +439,9 @@ const CardWrapper: React.FC<{
       <div className={responsiveClass} style={wrapperStyle}>
         <div className="scale-[0.35] md:scale-100 origin-center transition-transform duration-500">
           <div className="w-[340px] h-[540px] overflow-visible">
-            <ElectricBorder>
+            <AmbientGlowBorder color1="#FF4500" color2="#FFA500">
               <CardContent {...card} />
-            </ElectricBorder>
+            </AmbientGlowBorder>
           </div>
         </div>
       </div>
@@ -454,9 +453,9 @@ const CardWrapper: React.FC<{
       <div className={responsiveClass} style={wrapperStyle}>
         <div className="scale-[0.35] md:scale-100 origin-center transition-transform duration-500">
           <div className="w-[340px] h-[540px] overflow-visible">
-            <BinaryBorder>
+            <AmbientGlowBorder color1="#00FF00" color2="#32CD32">
               <CardContent {...card} />
-            </BinaryBorder>
+            </AmbientGlowBorder>
           </div>
         </div>
       </div>
@@ -468,9 +467,9 @@ const CardWrapper: React.FC<{
       <div className={responsiveClass} style={wrapperStyle}>
         <div className="scale-[0.35] md:scale-100 origin-center transition-transform duration-500">
           <div className="w-[340px] h-[540px] overflow-visible">
-            <FreezeBorder>
+            <AmbientGlowBorder color1="#00FFFF" color2="#1E90FF">
               <CardContent {...card} />
-            </FreezeBorder>
+            </AmbientGlowBorder>
           </div>
         </div>
       </div>
